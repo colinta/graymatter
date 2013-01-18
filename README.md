@@ -3,13 +3,15 @@ GrayMatter
 
 A collection of useful tools, by Colin T.A. Gray.  Depends on [SugarCube][].
 
+module namespace: `GM`
+
 [SugarCube]: https://github.com/rubymotion/sugarcube
 
 GestureRecognizers
 ------------------
 
-### HorizontalPanGestureRecognizer
-### VerticalPanGestureRecognizer
+### GM::HorizontalPanGestureRecognizer
+### GM::VerticalPanGestureRecognizer
 
 These recognize a pan gesture in only one direction.  The default threshold is
 `HorizontalPanGestureRecognizer::DefaultThreshold` (4), but can be changed with the
@@ -18,7 +20,7 @@ These recognize a pan gesture in only one direction.  The default threshold is
 UIViews
 -------
 
-### SetupView (module)
+### GM::SetupView (module)
 
 It infuriates me that there are two ways to setup a view: `initWithFrame` and
 `awakeFromNib`.  There needs to be *one* place to put code for custom views.
@@ -26,7 +28,7 @@ It infuriates me that there are two ways to setup a view: `initWithFrame` and
 
 ```ruby
 class MyView < UIView
-  include SetupView
+  include GM::SetupView
 
   def setup
     # this code will only be run once
@@ -34,7 +36,7 @@ class MyView < UIView
 end
 ```
 
-### ForegroundColorView
+### GM::ForegroundColorView
 
 Sometimes you need a background color that is part of your view hierarchy.  I
 can't remember why **I** needed to, but this view does the trick.  Assign a
@@ -43,11 +45,11 @@ can't remember why **I** needed to, but this view does the trick.  Assign a
 
 Basically, you can draw a swath of color this way.
 
-### FabTabView
+### GM::FabTabView
 
 This is a very simple tab view.  It controls a list of controllers, which should
 implement a `fab_tab_button` attribute (if you want to explicitly declare that
-your controller is a FabTabController, you can `include FabTabController`).
+your controller is a FabTabController, you can `include GM::FabTabController`).
 The `fab_tab_button` should be a subcalss of `UIControl`.
 
 When you use a `FabTabView`, you must assign a `root_controller`, and its child
@@ -76,7 +78,7 @@ gets the job done!
 TODO: support pressing the tab button to return to a navigation controller's
 root view.
 
-### GradientView
+### GM::GradientView
 
 This used to be a separate gem, but I've removed that.  It lives here now.
 
@@ -84,10 +86,10 @@ It's great as a background view!
 
 TODO: implement the radial gradient.  I just haven't needed it.
 
-### TypewriterView
+### GM::TypewriterView
 
 A `UICollectionView` can do everything that `TypewriterView` does, but with lots
-more methods to implement. ;-)
+more delegate methods to implement. ;-)
 
 Add a bunch of subviews to `TypewriterView` and it will display them
 left-to-right, top-to-bottom.  You can assign `scroll_view` and
@@ -95,27 +97,68 @@ left-to-right, top-to-bottom.  You can assign `scroll_view` and
 appropriate `contentSize`, and the `background_view` will be ignored when it
 lays out the subviews, and it will be sized to cover the entire view.
 
-### InsetTextField
+### GM::InsetTextField
 
 I'm sure we've all implemented a subclass of `UITextField` that implements the
 methods `placeholderRectForBounds`, `textRectForBounds`, `editingRectForBounds`
 
-### MaskedImageView
+### GM::MaskedImageView
 
 Masks a UIImageView using a UIBezierPath.  Assign an image to `image`, and a
 bezier path to `path`, and that's it.
 
-### RoundedRectView
+### GM::RoundedRectView
 
 You can assign a different radius for each side.  Radius is attached to a *side*
 (not per corner), so that means that there will be some symmetry.
 
+UIViewController modules
+------
 
-### KeyboardHandler
+These modules are all meant to enhance your custom `UIViewController` classes.
 
-### PeoplePicker
+### GM::KeyboardHandler
 
-### SelectOneTableViewController
+This one is so handy!  I've tried to get it to be both simple and thorough.
+Ideally, you can pass it your scroll view, and it will take care of setting the
+contentInset when the keyboard is shown.  Call `keyboard_handler_start` and
+`keyboard_handler_stop` like this:
+
+```ruby
+def viewWillAppear(animated)
+  super
+  keyboard_handler_start(@scroll_view)
+end
+
+def viewDidDisappear(animated)
+  super
+  keyboard_handler_stop(@scroll_view)
+end
+```
+
+### GM::Modal
+
+coming soon
+
+### GM::Parallax
+
+coming soon
+
+Tools
+-----
+
+### GM::PeoplePicker
+
+Easy to show the address book people picker.
+
+```ruby
+GM::PeoplePicker.show { |person|
+  # an ABAddressBook person will be available here, or nil if the operation was
+  # canceled.
+}
+```
+
+### GM::SelectOneTableViewController
 
 This one is really handy for table-based forms.  Assign `items` and style them
 with a `cell_handler` block, and an optional `include_other` boolean will
