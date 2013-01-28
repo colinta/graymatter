@@ -169,3 +169,38 @@ with a `cell_handler` block, and an optional `include_other` boolean will
 include a UITextField.  An `on_done` block is called with one of the objects in
 `items` when it is selected.
 
+### GM::KeyboardState
+
+Tracks the keyboard throughout the lifetime of the app - you can always find out
+whether the keyboard is visible or not.  It is **SILLY** that this is not
+something easy to determine! (well, now it is, I guess)
+
+```ruby
+if KeyboardState.visible?
+  KeyboardState.last_notification
+end
+```
+
+### FuncTools
+
+A bunch of useful functions for asynchronous programming
+
+```ruby
+after = GM::FuncTools.after(2) { puts "hi!" }
+after.call  # =>
+after.call  # => 'hi!'
+after.call  # => 'hi!'
+
+keep_it_up = GM::FuncTools.until(3) { puts 'boo!' }
+keep_it_up.call  # => 'hi!'
+keep_it_up.call  # => 'hi!'
+keep_it_up.call  # => 'hi!'
+keep_it_up.call
+keep_it_up.call
+
+once = GM::FuncTools.once { puts "i'm outta here" }
+once.call  # => "i'm outta here"
+once.call  # =>
+once.call  # =>
+```
+
