@@ -125,14 +125,18 @@ contentInset when the keyboard is shown.  Call `keyboard_handler_start` and
 `keyboard_handler_stop` like this:
 
 ```ruby
-def viewWillAppear(animated)
-  super
-  keyboard_handler_start(@scroll_view)
-end
+class MyController
+  include GM::KeyboardHandler
 
-def viewDidDisappear(animated)
-  super
-  keyboard_handler_stop(@scroll_view)
+  def viewWillAppear(animated)
+    super
+    keyboard_handler_start(@scroll_view)
+  end
+
+  def viewDidDisappear(animated)
+    super
+    keyboard_handler_stop(@scroll_view)
+  end
 end
 ```
 
