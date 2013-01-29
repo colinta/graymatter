@@ -1,0 +1,16 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    geomotion (0.5)
+    rake (10.0.3)
+    sugarcube (0.14.0)
+    teacup (1.0.4)
+      rake
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  geomotion
+  sugarcube
+  teacup
