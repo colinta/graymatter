@@ -2,7 +2,7 @@ module GM
   class KeyboardState
     NSNotificationCenter.defaultCenter.addObserver(self,
             selector: :'didShow:',
-            name: UIKeyboard_did_showNotification,
+            name: UIKeyboardDidShowNotification,
             object: nil)
     NSNotificationCenter.defaultCenter.addObserver(self,
             selector: :'willHide:',

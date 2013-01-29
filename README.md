@@ -2,10 +2,12 @@ GrayMatter
 ==========
 
 A collection of useful tools, by Colin T.A. Gray.  Depends on [SugarCube][].
+Tests require [Teacup][].
 
 module namespace: `GM`
 
 [SugarCube]: https://github.com/rubymotion/sugarcube
+[Teacup]: https://github.com/rubymotion/teacup
 
 GestureRecognizers
 ------------------
@@ -146,7 +148,17 @@ coming soon
 
 ### GM::Parallax
 
-coming soon
+Given a scrollview and a hash of views and rules, you can easily create really
+neat parallax effects.  The simplest rule - `1` - will move a view relative to
+your scroll view content offset.
+
+The other thing it can do which is great is keep *two* scroll views in sync, so
+if you've got a speadsheet header and you need it to keep up with scrolling
+inside the cells-view, that is pretty easy.
+
+```ruby
+class MyController
+```
 
 Tools
 -----
@@ -204,3 +216,21 @@ once.call  # =>
 once.call  # =>
 ```
 
+### TheEntireUI
+
+This class is for easily accessing, obviously, the entire UI.  For now that just
+means `disable`-ing and `enable`-ing the UI:
+
+```ruby
+GM::TheEntireUI.disable  # a view is added to the UIWindow that intercepts UI events
+GM::TheEntireUI.enable  # the view is removed
+```
+
+You can call these using notifications, too, if that just fits your app better
+(I can't imagine a situation where it would... but I ported this thing from code
+that was using notifications, so there it is).
+
+```ruby
+GM::DisableUI.post_notification  # => GM::TheEntireUI.disable
+GM::EnableUI.post_notification  # => GM::TheEntireUI.enable
+```

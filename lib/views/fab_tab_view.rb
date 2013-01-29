@@ -70,7 +70,6 @@ module GM
             delegate.fabTabSelectedController(selected_controller) if delegate and delegate.respond_to?(:fabTabSelectedController)
             })
       else
-        # @tabView << selected_controller.view
         @selectedView.removeFromSuperview if @selectedView
         self.insertSubview(selected_controller.view, atIndex:0)
       end
