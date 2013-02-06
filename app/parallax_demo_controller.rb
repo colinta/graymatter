@@ -1,4 +1,3 @@
-
 class ParallaxDemoController < UIViewController
   include GM::Parallax
 
@@ -13,7 +12,7 @@ class ParallaxDemoController < UIViewController
     @scroll_view = subview(UIScrollView, :scroll_view,
       frame: root.bounds.thinner(20),
       autoresizingMask: UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight,
-      contentSize: [root.bounds.width - 20, 2000],
+      contentSize: [root.bounds.width * 1.5, 1500],
       backgroundColor: :white.uicolor,
       ) do
 
@@ -49,9 +48,9 @@ class ParallaxDemoController < UIViewController
   def layoutDidLoad
     prepare_parallax(@scroll_view,
       @button => false,
-      @bg_image => 2,
-      @diagonal => {x:1},
-      @moving_thing => ->(offset) { (500..1000) === offset.y ? [offset.y - 500, 0] : nil },
+      @bg_image => [-2, 2],
+      @diagonal => ->(offset) { CGPoint.new(offset.y * 1.5, 0) },
+      @moving_thing => ->(offset) { (120..400) === offset.y ? CGPoint.new(offset.y - 120, 0) : (offset.y < 120 ? CGPoint.new(0, 0) : CGPoint.new(280, 0)) },
       @another_scroller => [0, 1],  # contentOffset.y will be the same when scroll_view is changed
       )
   end
