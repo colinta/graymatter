@@ -14,10 +14,10 @@ module GM
       super
       return if self.state == UIGestureRecognizerStateFailed
 
-      nowPoint = touches.anyObject.locationInView(self.view)
-      prevPoint = touches.anyObject.previousLocationInView(self.view)
-      @move_x += prevPoint.x - nowPoint.x
-      @move_y += prevPoint.y - nowPoint.y
+      now_point = touches.anyObject.locationInView(self.view)
+      prev_point = touches.anyObject.previousLocationInView(self.view)
+      @move_x += prev_point.x - now_point.x
+      @move_y += prev_point.y - now_point.y
       if ! @dragging
         if @move_y.abs > @threshold
           @dragging = true
