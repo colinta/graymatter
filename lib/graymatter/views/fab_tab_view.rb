@@ -47,14 +47,30 @@ module GM
       selected_controller = self.selected_view_controller
       return unless selected_controller
 
+      if selected_controller == previous_controller
+        # imitate UITabBarController
+        # but give delegate a chance to intercept
+        if delegate && delegate.respond_to?(:fabTabPopToRoot)
+          delegate.fabTabPopToRoot(selected_controller)
+        else
+          nav_ctlr = selected_controller.is_a?(UINavigationController) ? selected_controller : selected_controller.navigationController
+          if nav_ctlr
+            nav_ctlr.popToRootViewControllerAnimated(true)
+          end
+        end
+
+        # no need to proceed
+        return
+      end
+
       @buttons_view.subviews.each_index do |index|
         view = @buttons_view.subviews[index]
         # enable all buttons that are not selected
-        view.enabled = (selected_index != index)
+        view.selected = (selected_index == index)
       end
 
       if previous_controller && selected_controller
-        @root_controller.transitionFromViewController(previous_controller,
+        root_controller.transitionFromViewController(previous_controller,
           toViewController:selected_controller,
           duration:0,
           options:UIViewAnimationOptionTransitionNone,
@@ -130,7 +146,7 @@ module GM
     end
 
     def addTab(controller)
-      self.view_controllers << controller
+      root_controller.addChildViewController(controller)
       @buttons_view << controller.fab_tab_button
 
       if @max_button_height < controller.fab_tab_button.frame.size.height
@@ -144,13 +160,18 @@ module GM
       # button touch handler - select the view controller
       my_index = self.view_controllers.length - 1
       controller.fab_tab_button.on :touch do
-        self.selected_index = my_index if self.enabled
+        self.selected_index = my_index
       end
 
       # the selected view was JUST added, it needs to be added to @selectedView
       if @selected_index && self.view_controllers.length == @selected_index + 1
         self.selected_index = @selected_index
       end
+    end
+
+    def didMoveToSuperview
+      super
+      self.selected_index = 0 unless @selected_index
     end
 
   end
