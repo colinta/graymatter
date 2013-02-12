@@ -7,12 +7,12 @@ module GM
     end
 
     # call this method from your controller's `viewDidLoad` method
-    def prepareHideShowModal
+    def prepare_hide_show_modal
       unless HideShowModalModule.modal_view
         HideShowModalModule.modal_view = UIView.alloc.initWithFrame(App.window.bounds)
         HideShowModalModule.modal_view.backgroundColor = :black.uicolor(0.5)
         spinner = UIActivityIndicatorView.large
-        spinner.center = [modal.bounds.width / 2, modal.bounds.height / 2]
+        spinner.center = [modal_view.bounds.width / 2, modal_view.bounds.height / 2]
         spinner.startAnimating
         HideShowModalModule.modal_view << spinner
       end
@@ -24,7 +24,18 @@ module GM
       HideShowModalModule.modal_is_visible = false
     end
 
-    def showModal
+    def show_modal_in(time_after)
+      @timer.invalidate if @timer
+      @timer = time_after.later do
+        if @timer
+          show_modal
+        end
+      end
+    end
+
+    def show_modal
+      @timer.invalidate if @timer
+
       App.window.bringSubviewToFront(HideShowModalModule.modal_view)
       unless HideShowModalModule.modal_is_visible
         FuncTools.CFMain {
@@ -36,7 +47,10 @@ module GM
       end
     end
 
-    def hideModal
+    def hide_modal
+      @timer.invalidate if @timer
+      @timer = nil
+
       FuncTools.CFMain {
         HideShowModalModule.modal_view.fade_out
       }
