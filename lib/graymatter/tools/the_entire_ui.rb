@@ -12,8 +12,13 @@ module GM
 
       def enable(options={})
         return unless @blocking_view
-        @blocking_view.removeFromSuperview
-        @blocking_view = nil
+        @count ||= 1
+        @count -= 1
+        if @count <= 0
+          @count = 0
+          @blocking_view.removeFromSuperview
+          @blocking_view = nil
+        end
       end
 
       def disable_notification(notification)
@@ -21,6 +26,8 @@ module GM
       end
 
       def disable(options={})
+        @count ||= 0
+        @count += 1
         return if @blocking_view
         @blocking_view = UIView.alloc.initWithFrame(UIScreen.mainScreen.bounds)
         @blocking_view.stylename = :block_ui
