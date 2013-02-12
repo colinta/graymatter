@@ -123,21 +123,27 @@ These modules are all meant to enhance your custom `UIViewController` classes.
 
 This one is so handy!  I've tried to get it to be both simple and thorough.
 Ideally, you can pass it your scroll view, and it will take care of setting the
-contentInset when the keyboard is shown.  Call `keyboard_handler_start` and
-`keyboard_handler_stop` like this:
+contentInset when the keyboard is shown.  You must call `keyboard_handler_start`
+and `keyboard_handler_stop` - these methods register (and unregister) keyboard
+events.  You pass the scroll view into the `prepare_keyboard_handler` method
+before the view is visible.
 
 ```ruby
 class MyController
   include GM::KeyboardHandler
 
+  def viewDidLoad
+    prepare_keyboard_handler(@scroll_view)
+  end
+
   def viewWillAppear(animated)
     super
-    keyboard_handler_start(@scroll_view)
+    keyboard_handler_start
   end
 
   def viewDidDisappear(animated)
     super
-    keyboard_handler_stop(@scroll_view)
+    keyboard_handler_stop
   end
 end
 ```
