@@ -1,6 +1,6 @@
 module GM
   # A modal overlay.
-  module HideShowModalModule
+  module HideShowModal
     class << self
       attr_accessor :modal_view
       attr_accessor :modal_is_visible

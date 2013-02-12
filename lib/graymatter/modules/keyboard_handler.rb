@@ -1,5 +1,5 @@
 module GM
-  module KeyboardHandlerModule
+  module KeyboardHandler
 
     def prepare_keyboard_handler(scroll_view)
       @keyboard_handler_scroll_view = scroll_view
