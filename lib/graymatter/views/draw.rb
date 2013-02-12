@@ -1,6 +1,7 @@
 module GM
 
   if false
+    # declaring these functions here will make them available in the REPL.
     CATransform3DMakeRotation(0, 0, 0, 0)
     CATransform3DMakeTranslation(0, 0, 0)
     CATransform3DMakeScale(1.0, 1.0, 1.0)
