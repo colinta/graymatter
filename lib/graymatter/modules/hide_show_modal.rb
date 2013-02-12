@@ -9,12 +9,13 @@ module GM
     # call this method from your controller's `viewDidLoad` method
     def prepare_hide_show_modal
       unless HideShowModalModule.modal_view
-        HideShowModalModule.modal_view = UIView.alloc.initWithFrame(App.window.bounds)
-        HideShowModalModule.modal_view.backgroundColor = :black.uicolor(0.5)
+        modal_view = UIView.alloc.initWithFrame(App.window.bounds)
+        modal_view.backgroundColor = :black.uicolor(0.5)
         spinner = UIActivityIndicatorView.large
         spinner.center = [modal_view.bounds.width / 2, modal_view.bounds.height / 2]
         spinner.startAnimating
-        HideShowModalModule.modal_view << spinner
+        modal_view << spinner
+        HideShowModalModule.modal_view = modal_view
       end
       unless HideShowModalModule.modal_view.isDescendantOfView(App.window)
         App.window << HideShowModalModule.modal_view
