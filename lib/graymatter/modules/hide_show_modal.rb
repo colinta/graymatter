@@ -8,21 +8,21 @@ module GM
 
     # call this method from your controller's `viewDidLoad` method
     def prepare_hide_show_modal
-      unless HideShowModalModule.modal_view
+      unless HideShowModal.modal_view
         modal_view = UIView.alloc.initWithFrame(App.window.bounds)
         modal_view.backgroundColor = :black.uicolor(0.5)
         spinner = UIActivityIndicatorView.large
         spinner.center = [modal_view.bounds.width / 2, modal_view.bounds.height / 2]
         spinner.startAnimating
         modal_view << spinner
-        HideShowModalModule.modal_view = modal_view
+        HideShowModal.modal_view = modal_view
       end
-      unless HideShowModalModule.modal_view.isDescendantOfView(App.window)
-        App.window << HideShowModalModule.modal_view
+      unless HideShowModal.modal_view.isDescendantOfView(App.window)
+        App.window << HideShowModal.modal_view
       end
 
-      HideShowModalModule.modal_view.alpha = 0.0
-      HideShowModalModule.modal_is_visible = false
+      HideShowModal.modal_view.alpha = 0.0
+      HideShowModal.modal_is_visible = false
     end
 
     def show_modal_in(time_after)
@@ -37,14 +37,14 @@ module GM
     def show_modal
       @timer.invalidate if @timer
 
-      App.window.bringSubviewToFront(HideShowModalModule.modal_view)
-      unless HideShowModalModule.modal_is_visible
+      App.window.bringSubviewToFront(HideShowModal.modal_view)
+      unless HideShowModal.modal_is_visible
         FuncTools.CFMain {
-          HideShowModalModule.modal_view.alpha = 0.0
-          HideShowModalModule.modal_view.show
-          HideShowModalModule.modal_view.fade_in
+          HideShowModal.modal_view.alpha = 0.0
+          HideShowModal.modal_view.show
+          HideShowModal.modal_view.fade_in
         }
-        HideShowModalModule.modal_is_visible = true
+        HideShowModal.modal_is_visible = true
       end
     end
 
@@ -53,9 +53,9 @@ module GM
       @timer = nil
 
       FuncTools.CFMain {
-        HideShowModalModule.modal_view.fade_out
+        HideShowModal.modal_view.fade_out
       }
-      HideShowModalModule.modal_is_visible = false
+      HideShowModal.modal_is_visible = false
     end
 
   end
