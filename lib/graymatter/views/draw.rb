@@ -36,11 +36,13 @@ module GM
 
   end
 
+
   def Drawler(frame=nil, &draw_code)
     klass = Class.new(Drawler)
     klass.draw_code = draw_code
     return frame ? klass.alloc.initWithFrame(frame) : klass
   end
+
 
   class Drawing < UIView
     attr_accessor :draw
@@ -70,7 +72,7 @@ module GM
       context = UIGraphicsGetCurrentContext()
       @draw.each do |drawing|
         CGContextSaveGState(context)
-        drawing.draw(context)
+        drawing.draw
         CGContextRestoreGState(context)
       end
     end
@@ -117,25 +119,34 @@ module GM
         }
       end
 
-      def draw(context)
-        raise 'Implement the `draw(context)` method'
+      def draw
+        raise 'Implement the `draw` method'
       end
     end
 
     class Primitive < Draw
       attr_assigner(:line_width, 1)
-      attr_assigner(:color, UIColor.blackColor) { |val| val.uicolor }
-      attr_assigner(:background, UIColor.clearColor) { |val| val.uicolor }
+      attr_assigner(:line_dash)
+      attr_assigner(:color, UIColor.blackColor) { |val| val ? val.uicolor : UIColor.clearColor }
+      attr_assigner(:fill, UIColor.clearColor) { |val| val ? val.uicolor : UIColor.clearColor }
 
       # setup the default drawing context, and perform your drawing in the block
       # you pass to this function
       def defaults(context)
         CGContextSaveGState(context)
         color.setStroke
-        background.setFill
+        fill.setFill
         CGContextSetLineWidth(context, self.line_width)
+        if line_dash
+          CGContextSetLineDash(context, 0, line_dash.to_pointer(:float), line_dash.length)
+        end
         yield
         CGContextRestoreGState(context)
+      end
+
+      def background(*args)
+        NSLog('Draw#background is deprecated in favor of Draw#fill')
+        fill(*args)
       end
 
     end
@@ -149,16 +160,17 @@ module GM
         self.p2(p2)
       end
 
-      def draw(context)
+      def draw
+        context = UIGraphicsGetCurrentContext()
         defaults(context) {
-          CGContextMoveToPoint(context, p1_x, p1_y)
-          CGContextAddLineToPoint(context, p2_x, p2_y)
+          CGContextMoveToPoint(context, p1.x, p1.y)
+          CGContextAddLineToPoint(context, p2.x, p2.y)
           CGContextStrokePath(context)
         }
       end
 
       def frame
-        frame = CGRectStandardize(CGRectMake(p1_x, p1_y,  p2_x - p1_x, p2_y - p1_y))
+        frame = CGRectStandardize(CGRectMake(p1.x, p1.y,  p2.x - p1.x, p2.y - p1.y))
         if frame.size.width == 0
           frame.size.width = self.line_width
         end
@@ -168,10 +180,37 @@ module GM
         frame
       end
 
-      def p1_x ; @p1[0] ; end
-      def p1_y ; @p1[1] ; end
-      def p2_x ; @p2[0] ; end
-      def p2_y ; @p2[1] ; end
+      # convert the current line to a rect
+      def rect()
+        Rect.new(p1, p2)
+          .color(color)
+          .fill(fill)
+          .line_width(line_width)
+          .line_dash(line_dash)
+      end
+
+    end
+
+    class Rect < Line
+      attr_assigner(:rect) { |rect| SugarCube::CoreGraphics::Rect(rect) }
+      attr_assigner(:corner)
+
+      def initialize(*rect_args)
+        @rect = SugarCube::CoreGraphics::Rect(*rect_args)
+      end
+
+      def draw
+        context = UIGraphicsGetCurrentContext()
+        defaults(context) {
+          if corner
+            path = UIBezierPath.bezierPathWithRoundedRect(CGRectStandardize(rect), cornerRadius:corner)
+            CGContextAddPath(context, path.CGPath)
+          else
+            CGContextAddRect(context, rect)
+          end
+          CGContextDrawPath(context, KCGPathFillStroke)
+        }
+      end
 
     end
 
@@ -183,10 +222,11 @@ module GM
         self.center(center)
         self.radius(radius)
         self.color(:clear)  # default to no border
-        self.background(color) if color
+        self.fill(color) if color
       end
 
-      def draw(context)
+      def draw
+        context = UIGraphicsGetCurrentContext()
         defaults(context) {
           CGContextAddEllipseInRect(context, frame)
           CGContextDrawPath(context, KCGPathFillStroke)
@@ -242,11 +282,18 @@ module GM
         self
       end
 
-      def draw(context)
+      def curve(pt, control1:control1, control2:control2)
+        @path.addCurveToPoint(pt, controlPoint1:control1, controlPoint2:control2)
+        @last = pt
+      end
+
+      def draw
         @path.lineWidth = self.line_width
 
+        context = UIGraphicsGetCurrentContext()
         defaults(context) {
-          @path.stroke
+          CGContextAddPath(context, @path.CGPath)
+          CGContextDrawPath(context, KCGPathFillStroke)
         }
       end
 
@@ -255,6 +302,7 @@ module GM
     class LinearGradient < Line
       attr_assigner(:colors) { |colors| colors.map{ |c| c.uicolor }}
       attr_assigner(:points)
+      attr_assigner(:extended, false)  # if true, gradient options are KCGGradientDrawsBeforeStartLocation | KCGGradientDrawsAfterEndLocation
 
       def initialize(p1, p2, colors, points=nil)
         super(p1, p2)
@@ -267,7 +315,8 @@ module GM
         end
       end
 
-      def draw(context)
+      def draw
+        context = UIGraphicsGetCurrentContext()
         color_space = CGColorSpaceCreateDeviceRGB()
         cgcolors = self.colors.map { |color| color.CGColor }
 
@@ -280,7 +329,12 @@ module GM
         end
 
         gradient = CGGradientCreateWithColors(color_space, cgcolors, points.to_pointer(:float))
-        CGContextDrawLinearGradient(context, gradient, p1, p2, 0)
+        options = 0
+        if self.extended
+          options |= KCGGradientDrawsBeforeStartLocation
+          options |= KCGGradientDrawsAfterEndLocation
+        end
+        CGContextDrawLinearGradient(context, gradient, p1, p2, options)
       end
     end
 
@@ -289,6 +343,7 @@ module GM
       attr_assigner(:radius)
       attr_assigner(:colors) { |colors| colors.map{ |c| c.uicolor }}
       attr_assigner(:points)
+      attr_assigner(:extended, false)  # if true, gradient options are KCGGradientDrawsBeforeStartLocation | KCGGradientDrawsAfterEndLocation
 
       def initialize(center, radius, colors, points=nil)
         self.center(center)
@@ -302,7 +357,8 @@ module GM
         end
       end
 
-      def draw(context)
+      def draw
+        context = UIGraphicsGetCurrentContext()
         color_space = CGColorSpaceCreateDeviceRGB()
         cgcolors = self.colors.map { |color| color.CGColor }
 
@@ -315,7 +371,7 @@ module GM
         end
 
         gradient = CGGradientCreateWithColors(color_space, cgcolors, points.to_pointer(:float))
-        CGContextDrawRadialGradient(context, gradient, center, 0, center, radius, 0)
+        CGContextDrawRadialGradient(context, gradient, center, 0, center, radius, self.extended ? KCGGradientDrawsBeforeStartLocation|KCGGradientDrawsAfterEndLocation : 0)
       end
     end
 
@@ -324,21 +380,22 @@ module GM
       attr_assigner(:path)
 
       # array of D::Draw objects
-      attr_assigner(:draw) { |draw| draw.is_a?(Enumerable) ? draw : [draw] }
+      attr_assigner(:inside) { |inside| inside.is_a?(Enumerable) ? inside : [inside] }
 
-      def initialize(path, draw=nil, &block)
+      def initialize(path, inside=nil, &block)
         self.path(path)
         @yield = block
-        @draw = draw
+        self.inside = inside if inside
       end
 
-      def draw(context)
+      def draw
+        context = UIGraphicsGetCurrentContext()
         CGContextSaveGState(context)  # save before clipping
         path.addClip
 
-        if @draw
-          @draw.each do |drawing|
-            drawing.draw(context)
+        if @inside
+          @inside.each do |drawing|
+            drawing.draw
           end
         end
         @yield.call(context) if @yield
@@ -351,6 +408,10 @@ module GM
     module_function
     def line(*args)
       Line.new(*args)
+    end
+
+    def rect(*args)
+      Rect.new(*args)
     end
 
     def circle(*args)
