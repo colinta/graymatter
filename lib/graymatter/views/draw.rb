@@ -129,6 +129,7 @@ module GM
       attr_assigner(:line_dash)
       attr_assigner(:color, UIColor.blackColor) { |val| val ? val.uicolor : UIColor.clearColor }
       attr_assigner(:fill, UIColor.clearColor) { |val| val ? val.uicolor : UIColor.clearColor }
+      attr_assigner(:fill_phase) { |val| val && SugarCube::CoreGraphics::Size(val) }
 
       # setup the default drawing context, and perform your drawing in the block
       # you pass to this function
@@ -136,6 +137,9 @@ module GM
         CGContextSaveGState(context)
         color.setStroke
         fill.setFill
+        if fill_phase
+          CGContextSetPatternPhase(context, fill_phase)
+        end
         CGContextSetLineWidth(context, self.line_width)
         if line_dash
           CGContextSetLineDash(context, 0, line_dash.to_pointer(:float), line_dash.length)
