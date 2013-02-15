@@ -3,7 +3,7 @@ def draw_detail_disclosure(target)
 
   # white border around button
   draws = [
-    GM::D::circle(bounds.center, 11.5, :white).background(:white),
+    GM::D::circle(bounds.center, 11.5, :white).fill(:white),
   ]
 
   # the blue background consists of two radial gradients - the first is solid, the

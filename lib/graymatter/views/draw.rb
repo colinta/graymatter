@@ -127,7 +127,7 @@ module GM
     class Primitive < Draw
       attr_assigner(:line_width, 1)
       attr_assigner(:line_dash)
-      attr_assigner(:color, UIColor.blackColor) { |val| val ? val.uicolor : UIColor.clearColor }
+      attr_assigner(:color, UIColor.clearColor) { |val| val ? val.uicolor : UIColor.clearColor }
       attr_assigner(:fill, UIColor.clearColor) { |val| val ? val.uicolor : UIColor.clearColor }
       attr_assigner(:fill_phase) { |val| val && SugarCube::CoreGraphics::Size(val) }
 
@@ -189,6 +189,7 @@ module GM
         Rect.new(p1, p2)
           .color(color)
           .fill(fill)
+          .fill_phase(fill_phase)
           .line_width(line_width)
           .line_dash(line_dash)
       end
@@ -222,7 +223,7 @@ module GM
       attr_assigner(:center) { |pt| SugarCube::CoreGraphics::Point(pt) }
       attr_assigner(:radius)
 
-      def initialize(center, radius, color=nil)
+      def initialize(center, radius=nil, color=nil)
         self.center(center)
         self.radius(radius)
         self.color(:clear)  # default to no border
@@ -286,9 +287,14 @@ module GM
         self
       end
 
+      def curve(pt, control:control)
+        curve(pt, control1:control, control2: control)
+      end
+
       def curve(pt, control1:control1, control2:control2)
         @path.addCurveToPoint(pt, controlPoint1:control1, controlPoint2:control2)
         @last = pt
+        self
       end
 
       def draw
@@ -402,7 +408,14 @@ module GM
             drawing.draw
           end
         end
-        @yield.call(context) if @yield
+
+        if @yield
+          if @yield.arity == 1
+            @yield.call(context)
+          else
+            @yield.call
+          end
+        end
 
         CGContextRestoreGState(context)  # restore after clipping
       end
