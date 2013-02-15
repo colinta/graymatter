@@ -390,7 +390,32 @@ module GM
       end
     end
 
-    class Mask < Draw
+    class Custom < Primitive
+
+      def initialize(&block)
+        @yield = block
+      end
+
+      def draw
+        context = UIGraphicsGetCurrentContext()
+        CGContextSaveGState(context)
+
+        if @yield
+          defaults(context) {
+            if @yield.arity == 1
+              @yield.call(context)
+            else
+              @yield.call
+            end
+          }
+        end
+
+        CGContextRestoreGState(context)
+      end
+
+    end
+
+    class Mask < Custom
       # UIBezierPath
       attr_assigner(:path)
 
@@ -399,8 +424,8 @@ module GM
 
       def initialize(path, inside=nil, &block)
         self.path(path)
-        @yield = block
-        self.inside = inside if inside
+        self.inside = inside || []
+        super &block
       end
 
       def draw
@@ -408,19 +433,11 @@ module GM
         CGContextSaveGState(context)  # save before clipping
         path.addClip
 
-        if @inside
-          @inside.each do |drawing|
-            drawing.draw
-          end
+        @inside.each do |drawing|
+          drawing.draw
         end
 
-        if @yield
-          if @yield.arity == 1
-            @yield.call(context)
-          else
-            @yield.call
-          end
-        end
+        super
 
         CGContextRestoreGState(context)  # restore after clipping
       end
@@ -450,6 +467,10 @@ module GM
 
     def radial_gradient(*args)
       RadialGradient.new(*args)
+    end
+
+    def custom(*args, &block)
+      Custom.new(*args, &block)
     end
 
     def mask(*args, &block)
