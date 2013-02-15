@@ -1,8 +1,15 @@
 module GM
   module KeyboardHandler
 
-    def prepare_keyboard_handler(scroll_view)
+    # @param scroll_view [UIScrollView] The view that is going to be maintained
+    # @param insets [UIEdgeInsets] When the view is restored to full size, these
+    #   insets will be used for the `contentInset` property.
+    #   Default: [0, 0, 0, 0]
+    def prepare_keyboard_handler(scroll_view, insets=nil)
+      insets ||= [0, 0, 0, 0]
+
       @keyboard_handler_scroll_view = scroll_view
+      @keyboard_handler_insets = insets
     end
 
     def keyboard_handler_start
@@ -46,7 +53,7 @@ module GM
     end
 
     def keyboard_handler_keyboard_will_hide
-      insets = [0, 0, 0, 0]
+      insets = @keyboard_handler_insets
       scroll_view = @keyboard_handler_scroll_view
       scroll_view.contentInset = insets
       scroll_view.scrollIndicatorInsets = insets
