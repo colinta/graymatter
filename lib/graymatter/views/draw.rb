@@ -127,7 +127,7 @@ module GM
     class Primitive < Draw
       attr_assigner(:line_width, 1)
       attr_assigner(:line_dash)
-      attr_assigner(:color, UIColor.clearColor) { |val| val ? val.uicolor : UIColor.clearColor }
+      attr_assigner(:stroke, UIColor.clearColor) { |val| val ? val.uicolor : UIColor.clearColor }
       attr_assigner(:fill, UIColor.clearColor) { |val| val ? val.uicolor : UIColor.clearColor }
       attr_assigner(:fill_phase) { |val| val && SugarCube::CoreGraphics::Size(val) }
 
@@ -135,7 +135,7 @@ module GM
       # you pass to this function
       def defaults(context)
         CGContextSaveGState(context)
-        color.setStroke
+        stroke.setStroke
         fill.setFill
         if fill_phase
           CGContextSetPatternPhase(context, fill_phase)
@@ -146,6 +146,11 @@ module GM
         end
         yield
         CGContextRestoreGState(context)
+      end
+
+      def color(*args)
+        NSLog('Draw#color is deprecated in favor of Draw#stroke')
+        stroke(*args)
       end
 
       def background(*args)
@@ -187,7 +192,7 @@ module GM
       # convert the current line to a rect
       def rect()
         Rect.new(p1, p2)
-          .color(color)
+          .stroke(stroke)
           .fill(fill)
           .fill_phase(fill_phase)
           .line_width(line_width)
@@ -223,11 +228,11 @@ module GM
       attr_assigner(:center) { |pt| SugarCube::CoreGraphics::Point(pt) }
       attr_assigner(:radius)
 
-      def initialize(center, radius=nil, color=nil)
+      def initialize(center, radius=nil, fill_color=nil)
         self.center(center)
         self.radius(radius)
-        self.color(:clear)  # default to no border
-        self.fill(color) if color
+        self.stroke(:clear)  # default to no border
+        self.fill(fill_color) if fill_color
       end
 
       def draw
