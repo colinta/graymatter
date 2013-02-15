@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    graymatter (0.1.0)
+    graymatter (0.2.4)
       geomotion
       sugarcube
 
