@@ -8,6 +8,7 @@ module GM
 
     def setup
       self.opaque = false
+      self.color = self.backgroundColor
       self.backgroundColor = :clear.uicolor
     end
 
