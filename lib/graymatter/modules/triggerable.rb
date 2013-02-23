@@ -37,7 +37,7 @@ module GM
   #   }
   module Triggerable
 
-    def target_action(event=nil)
+    def triggerable_target_action(event=nil)
       if event
         # recursive call, which will run the code in `else` below
         triggerable_target_action[event] ||= []
@@ -48,18 +48,18 @@ module GM
 
     def on(*events, &action)
       events.each do |event|
-        target_action(event).push(action)
+        triggerable_target_action(event).push(action)
       end
     end
 
     def off(*events)
       events.each do |event|
-        target_action[event] = nil
+        triggerable_target_action[event] = nil
       end
     end
 
     def trigger(event, info)
-      target_action(event).each do |action|
+      triggerable_target_action(event).each do |action|
         if action.arity == 0
           action.call
         else
