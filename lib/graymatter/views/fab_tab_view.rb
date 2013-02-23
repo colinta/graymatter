@@ -8,8 +8,12 @@ module GM
     attr_accessor :tabHeight  # if this is set, it overrides min_button_height as the offset for thes selectedView
     # attr :selected_view_controller
 
-    def self.new(controller)
-      alloc.initInRootController(controller)
+    def self.new(controller=nil)
+      if controller
+        alloc.initInRootController(controller)
+      else
+        super()
+      end
     end
 
     # This is the preferred way of instantiating the view, because it defaults to
@@ -19,6 +23,16 @@ module GM
         self.autoresizingMask =  UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight
         @root_controller = controller
       end
+    end
+
+    def init
+      app_size = UIScreen.mainScreen.applicationFrame.size
+      initWithFrame([[0, 0], [app_size.width, 0]])
+    end
+
+    def root_controller=(ctlr)
+      @root_controller = ctlr
+      assign_default_index
     end
 
     def initWithFrame(frame)
@@ -38,6 +52,9 @@ module GM
     end
 
     def view_controllers
+      unless root_controller
+        raise "GM::FabTabView#root_controller is a required attribute"
+      end
       root_controller.childViewControllers
     end
 
@@ -171,7 +188,14 @@ module GM
 
     def didMoveToSuperview
       super
-      self.selected_index = 0 unless @selected_index
+      assign_default_index
+    end
+
+    def assign_default_index
+      if root_controller
+        @selected_index ||= 0
+        self.selected_index = @selected_index
+      end
     end
 
   end
