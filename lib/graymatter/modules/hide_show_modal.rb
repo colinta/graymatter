@@ -11,9 +11,10 @@ module GM
 
   # A modal overlay.
   module HideShowModal
+    attr_accessor :modal_is_visible
+
     class << self
       attr_accessor :modal_view
-      attr_accessor :modal_is_visible
     end
 
     # call this method from your controller's `viewDidLoad` method
@@ -38,7 +39,11 @@ module GM
       end
 
       HideShowModal.modal_view.alpha = 0.0
-      HideShowModal.modal_is_visible = false
+      if modal_is_visible
+        show_modal(false)
+      else
+        hide_modal(false)
+      end
     end
 
     def show_modal_in(time_after)
@@ -50,28 +55,33 @@ module GM
       end
     end
 
-    def show_modal
+    def show_modal(animated=true)
       @timer.invalidate if @timer
 
       @hide_show_modal_target.bringSubviewToFront(HideShowModal.modal_view)
-      unless HideShowModal.modal_is_visible
-        FuncTools.CFMain {
-          HideShowModal.modal_view.alpha = 0.0
-          HideShowModal.modal_view.show
+      FuncTools.CFMain {
+        HideShowModal.modal_view.show
+        if animated
           HideShowModal.modal_view.fade_in
-        }
-        HideShowModal.modal_is_visible = true
-      end
+        else
+          HideShowModal.modal_view.alpha = 1.0
+        end
+      }
+      @modal_is_visible = true
     end
 
-    def hide_modal
+    def hide_modal(animated=true)
       @timer.invalidate if @timer
       @timer = nil
 
       FuncTools.CFMain {
-        HideShowModal.modal_view.fade_out
+        if animated
+          HideShowModal.modal_view.fade_out
+        else
+          HideShowModal.modal_view.hide
+        end
       }
-      HideShowModal.modal_is_visible = false
+      @modal_is_visible = false
     end
 
   end
