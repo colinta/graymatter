@@ -107,11 +107,7 @@ module GM
     ##|  START AT 0, 0, AND START FLOATING
     ##|
     def layoutSubviews
-      layoutIfNeeded
       super
-    end
-    def layoutIfNeeded
-      # super
       # the max_height of *all* the rows so far (not just the current row)
       @max_height = top_margin
       clear
@@ -124,7 +120,7 @@ module GM
           add_next(view)
         end
       end
-      clear
+      clear(true)  # don't add vertical spacing
 
       self.frame = [self.frame.origin, [self.frame.size.width, @y + bottom_margin]]
       if scroll_view
@@ -144,11 +140,12 @@ module GM
     end
 
     private
-    def clear
+    def clear(is_last_row=false)
       @x = left_margin
       @y = @max_height
-      # only add the horizontal_spacing after at least one row has been written
-      if @y > top_margin
+      # only add the vertical_spacing after at least one row has been written
+      # and only if there are more rows to add
+      if @y > top_margin && ! is_last_row
         @y += vertical_spacing
       end
 
