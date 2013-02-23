@@ -216,6 +216,53 @@ class MyController < UIViewController
 end
 ```
 
+UIView modules
+-----
+
+### GM::Triggerable
+
+This is one of my favorites because I tend to make a lot of custom `UIView`
+subclasses.  If you have lots of buttons or controls in there, it's messy to
+create attributes for those and then "reach into" the view to assign
+touch/change events to those controls.
+
+Instead, `include GM::Triggerable` in that subclass and trigger custom events
+from those controls.  It looks like this:
+
+```ruby
+class BamBoomView < UIView
+  include GM::Triggerable
+
+  def initWithFrame(frame)
+    super.tap do
+      bam_button = UIButton.rounded
+      bam_button.setTitle('Bam', forState: :normal.uicontrolstate)
+      bam_button.sizeToFit
+      bam_button.on :touch {
+        self.trigger :bam
+      }
+      self << bam_button
+
+      boom_button = UIButton.rounded
+      boom_button.setTitle('BOOM', forState: :normal.uicontrolstate)
+      boom_button.sizeToFit
+      boom_button.on :touch {
+        self.trigger :boom
+      }
+      self << boom_button
+    end
+  end
+end
+
+cell = BamBoomView.new
+cell.on :bam {
+  puts "BAM!"
+}
+cell.on :boom {
+  puts "BOOM!"
+}
+```
+
 Tools
 -----
 
