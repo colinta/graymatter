@@ -2,7 +2,10 @@ class ParallaxDemoController < UIViewController
   include GM::Parallax
 
   attr :scroll_view
-  attr :button
+  attr :fixed_inside_button
+  attr :float_inside_button
+  attr :fixed_outside_button
+  attr :float_outside_button
   attr :bg_image
   attr :diagonal
   attr :moving_thing
@@ -16,11 +19,17 @@ class ParallaxDemoController < UIViewController
       backgroundColor: :white.uicolor,
       ) do
 
-      @button = subview(UIButton.rounded, :button,
+      @fixed_inside_button = subview(UIButton.rounded, :fixed_inside_button,
         title:'Hey.',
         origin: [10, 10],
         )
-      @button.sizeToFit
+      @fixed_inside_button.sizeToFit
+
+      @float_inside_button = subview(UIButton.rounded, :float_inside_button,
+        title:'Hey.',
+        origin: [110, 10],
+        )
+      @float_inside_button.sizeToFit
 
       @bg_image = subview('funny-guy'.uiimageview, :bg_image,
         origin: [50, 400],
@@ -35,6 +44,18 @@ class ParallaxDemoController < UIViewController
         )
     end
 
+    @fixed_outside_button = subview(UIButton.rounded, :button,
+      title:'Hey.',
+      origin: [10, 50],
+      )
+    @fixed_outside_button.sizeToFit
+
+    @float_outside_button = subview(UIButton.rounded, :button,
+      title:'Hey.',
+      origin: [110, 50],
+      )
+    @float_outside_button.sizeToFit
+
     @another_scroller = subview(UIScrollView, :another_scroller,
       frame: @scroll_view.frame.beside(0, width: 20),
       backgroundColor: :white.uicolor,
@@ -47,7 +68,10 @@ class ParallaxDemoController < UIViewController
 
   def layoutDidLoad
     prepare_parallax(@scroll_view,
-      @button => false,
+      @fixed_inside_button => false,
+      @float_inside_button => true,
+      @fixed_outside_button => false,
+      @float_outside_button => true,
       @bg_image => [-2, 2],
       @diagonal => ->(offset) { CGPoint.new(offset.y * 1.5, 0) },
       @moving_thing => ->(offset) { (120..400) === offset.y ? CGPoint.new(offset.y - 120, 0) : (offset.y < 120 ? CGPoint.new(0, 0) : CGPoint.new(280, 0)) },

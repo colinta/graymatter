@@ -155,15 +155,36 @@ coming soon
 ### GM::Parallax
 
 Given a scrollview and a hash of views and rules, you can easily create really
-neat parallax effects.  The simplest rule - `1` - will move a view relative to
-your scroll view content offset.
+neat parallax effects.  The two simplest rules - `true` and `false` - will
+either fix the view's location relative to its initial origin (`false` rule,
+e.g. `"Should I move?" => false`) or it will scroll with the scroll view
+(`"Should I move?" => true`).
 
 The other thing it can do which is great is keep *two* scroll views in sync, so
 if you've got a speadsheet header and you need it to keep up with scrolling
 inside the cells-view, that is pretty easy.
 
 ```ruby
-class MyController
+class MyController < UIViewController
+
+  layout do
+    @scroll_view = subview(UIScrollView, :scroll_view) do
+      @bg_image = subview(UIImage, :bg_image)
+    end
+  end
+
+  def viewDidLoad
+    prepare_parallax(@scroll_view,
+      @bg_image => [-2, 2],  # scrolls horizontally at double rate, and
+      @diagonal => ->(offset) { CGPoint.new(offset.y * 1.5, 0) },
+      @moving_thing => ->(offset) { (120..400) === offset.y ? CGPoint.new(offset.y - 120, 0) : (offset.y < 120 ? CGPoint.new(0, 0) : CGPoint.new(280, 0)) },
+      @another_scroller => [0, 1],  # contentOffset.y will be the same when scroll_view is changed
+      )
+    prepare_parallax(@another_scroller,
+      @scroll_view => [0, 1],  # you do need to mirror the two scroll view rules
+      )
+  end
+end
 ```
 
 Tools

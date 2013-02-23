@@ -1,29 +1,35 @@
 module GM
   module Parallax
 
-    # @param views [Hash] A dictionary of UIView objects associated with a
-    #   rule. The current origin of each view is stored, and considered to be
-    #   the reference point for future parallax operations.
+    # Moves views relative to the `contentOffset` of a scroll view. You can move
+    # the views faster or slower than the other elements to create a parallax
+    # effect, or you can link two scroll views, so that scrolling one also
+    # scrolls the other.
+    #
+    # If you assign link two `UIScrollView`s, the `contentOffset` will be
+    # adjusted, not its frame position.  If you really want to adjust its
+    # position, put it in an empty `UIView` and adjust that.
+    #
     # Rules
     # -----
-    # You can use numbers, two numbers, or your own arbitrary formula.
+    # You can use booleans, numbers, or your own arbitrary formula.
     #
     # Numeric => the rate at which scaling should occur vertically.
-    # Bool => true => same as doing nothing (scroll rate of `1`).  don't use this.
-    # Bool => false => "fixes" the object, so that it stays in place during scrolling.  same as using `-1`
-    # Array => [x_rate, y_rate] => the rate at which scaling should occur in both directions
+    # true => the view will scroll with the view, useful to have views that are
+    #   outside the scroll view move with scrolling in one direction or another
+    # false => "fixes" the object, so that it stays in place during scrolling.
+    # Array => [x_rate, y_rate] => the rate at which scaling should occur in
+    #   both directions
     # Hash => {x: x_rate, y:y_rate} => same as Array, but more explicit
     # CGPoint => used as an offset.  only useful when using a lambda, below
-    # ->(offset){ CGPoint.new(offset.x + 1, offset.y + 1) } => receives the content offset and returns a new x, y offset
+    # ->(offset){ CGPoint.new(offset.x + 1, offset.y + 1) } => receives the
+    #                          content offset and returns a new x, y offset
     # ->(offset){ nil } => do nothing
-    #
-    # If you assign *another UIScrollView* to track, it's `contentOffset` will
-    # be adjusted, not its frame position.  If you really want to adjust its
-    # position, put it in an empty `UIView` and adjust that.
     #
     # Examples
     # --------
     #
+    # @example
     #     # these are all view objects of some sort.  this example shows how to
     #     # configure them to respond to scroll movements:
     #     #
@@ -73,11 +79,26 @@ module GM
 
         case rule
         when true
-          x_rule = 1
-          y_rule = 1
+          # the view will move at the same rate as the scroll view.  for views
+          # inside the scroll_view, this does absolutely nothing, but views
+          # outside the scroll_view will be adjusted
+          if view.isDescendantOfView(scroll_view)
+            x_rule = 0
+            y_rule = 0
+          else
+            x_rule = 1
+            y_rule = 1
+          end
         when false
-          x_rule = -1
-          y_rule = -1
+          # fixes the view, which means it only needs to be moved if it is a
+          # child view of the scroll_view
+          if view.isDescendantOfView(scroll_view)
+            x_rule = -1
+            y_rule = -1
+          else
+            x_rule = 0
+            y_rule = 0
+          end
         when Numeric
           x_rule = rule
           y_rule = rule
