@@ -7,7 +7,7 @@ class AppDelegate
     return true if RUBYMOTION_ENV == 'test'
 
     $window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    $window.rootViewController = ParallaxDemoController.new
+    $window.rootViewController = TriggerableDemoController.new
     $window.makeKeyAndVisible
     true
   end

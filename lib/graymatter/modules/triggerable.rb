@@ -35,6 +35,14 @@ module GM
   #   cell.on :boom {
   #     puts "BOOM!"
   #   }
+  #   # the info that gets passed in is just the name of the event
+  #   cell.on :bam, :boom { |event|
+  #     if event == :boom
+  #       puts "BOOM, not bam"
+  #     elsif event == :bam
+  #       puts "BAM, not boom"
+  #     end
+  #   }
   module Triggerable
 
     def triggerable_target_action(event=nil)
@@ -58,12 +66,12 @@ module GM
       end
     end
 
-    def trigger(event, info)
+    def trigger(event)
       triggerable_target_action(event).each do |action|
         if action.arity == 0
           action.call
         else
-          action.call(info)
+          action.call(event)
         end
       end
     end
