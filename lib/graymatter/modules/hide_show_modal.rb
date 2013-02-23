@@ -3,6 +3,7 @@ module GM
     attr_accessor :spinner
 
     def layoutSubviews
+      super
       modal_size = bounds.size
       spinner.center = [modal_size.width / 2, modal_size.height / 2]
     end

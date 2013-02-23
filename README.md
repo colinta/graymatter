@@ -148,9 +148,38 @@ class MyController
 end
 ```
 
-### GM::Modal
+### GM::HideShowModal
 
-coming soon
+When you prepare the modal (usually in `viewDidLoad`) a modal view is added to
+the bottom of the window (making it the frontmost view) and immediately hidden.
+When you call `show_modal`, the modal fades in with a spinner.  `hide_modal`
+does the obvious.  You can also use `show_modal_in(time_interval)` to have the
+modal appear after a second or two.  Best used with `TheEntireUI.disable`, but
+that's up to you.
+
+```ruby
+class MyController < UIViewController
+
+  def viewDidLoad
+    prepare_hide_show_modal  # accepts a `target` - the view where the modal should be added
+  end
+
+  def submit_button_pressed
+    show_modal
+    submit_form {
+      hide_modal
+      UIAlertView.alert "Success!"
+    }
+  end
+
+  def refresh
+    show_modal_in(1.second)
+    fetch_data {
+      hide_modal
+    }
+  end
+end
+```
 
 ### GM::Parallax
 
