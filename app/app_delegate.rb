@@ -1,4 +1,4 @@
-# include SugarCube::Adjust
+include SugarCube::Adjust
 
 
 class AppDelegate
