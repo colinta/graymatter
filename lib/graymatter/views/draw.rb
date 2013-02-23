@@ -127,7 +127,7 @@ module GM
     class Primitive < Draw
       attr_assigner(:line_width, 1)
       attr_assigner(:line_dash)
-      attr_assigner(:color, UIColor.blackColor) { |val| val ? val.uicolor : UIColor.clearColor }
+      attr_assigner(:stroke, UIColor.clearColor) { |val| val ? val.uicolor : UIColor.clearColor }
       attr_assigner(:fill, UIColor.clearColor) { |val| val ? val.uicolor : UIColor.clearColor }
       attr_assigner(:fill_phase) { |val| val && SugarCube::CoreGraphics::Size(val) }
 
@@ -135,7 +135,7 @@ module GM
       # you pass to this function
       def defaults(context)
         CGContextSaveGState(context)
-        color.setStroke
+        stroke.setStroke
         fill.setFill
         if fill_phase
           CGContextSetPatternPhase(context, fill_phase)
@@ -146,6 +146,11 @@ module GM
         end
         yield
         CGContextRestoreGState(context)
+      end
+
+      def color(*args)
+        NSLog('Draw#color is deprecated in favor of Draw#stroke')
+        stroke(*args)
       end
 
       def background(*args)
@@ -187,8 +192,9 @@ module GM
       # convert the current line to a rect
       def rect()
         Rect.new(p1, p2)
-          .color(color)
+          .stroke(stroke)
           .fill(fill)
+          .fill_phase(fill_phase)
           .line_width(line_width)
           .line_dash(line_dash)
       end
@@ -222,11 +228,11 @@ module GM
       attr_assigner(:center) { |pt| SugarCube::CoreGraphics::Point(pt) }
       attr_assigner(:radius)
 
-      def initialize(center, radius, color=nil)
+      def initialize(center, radius=nil, fill_color=nil)
         self.center(center)
         self.radius(radius)
-        self.color(:clear)  # default to no border
-        self.fill(color) if color
+        self.stroke(:clear)  # default to no border
+        self.fill(fill_color) if fill_color
       end
 
       def draw
@@ -286,9 +292,14 @@ module GM
         self
       end
 
+      def curve(pt, control:control)
+        curve(pt, control1:control, control2: control)
+      end
+
       def curve(pt, control1:control1, control2:control2)
         @path.addCurveToPoint(pt, controlPoint1:control1, controlPoint2:control2)
         @last = pt
+        self
       end
 
       def draw
@@ -379,7 +390,32 @@ module GM
       end
     end
 
-    class Mask < Draw
+    class Custom < Primitive
+
+      def initialize(&block)
+        @yield = block
+      end
+
+      def draw
+        context = UIGraphicsGetCurrentContext()
+        CGContextSaveGState(context)
+
+        if @yield
+          defaults(context) {
+            if @yield.arity == 1
+              @yield.call(context)
+            else
+              @yield.call
+            end
+          }
+        end
+
+        CGContextRestoreGState(context)
+      end
+
+    end
+
+    class Mask < Custom
       # UIBezierPath
       attr_assigner(:path)
 
@@ -388,8 +424,8 @@ module GM
 
       def initialize(path, inside=nil, &block)
         self.path(path)
-        @yield = block
-        self.inside = inside if inside
+        self.inside = inside || []
+        super &block
       end
 
       def draw
@@ -397,12 +433,11 @@ module GM
         CGContextSaveGState(context)  # save before clipping
         path.addClip
 
-        if @inside
-          @inside.each do |drawing|
-            drawing.draw
-          end
+        @inside.each do |drawing|
+          drawing.draw
         end
-        @yield.call(context) if @yield
+
+        super
 
         CGContextRestoreGState(context)  # restore after clipping
       end
@@ -432,6 +467,10 @@ module GM
 
     def radial_gradient(*args)
       RadialGradient.new(*args)
+    end
+
+    def custom(*args, &block)
+      Custom.new(*args, &block)
     end
 
     def mask(*args, &block)
