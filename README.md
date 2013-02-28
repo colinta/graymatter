@@ -277,6 +277,18 @@ GM::PeoplePicker.show { |person|
 }
 ```
 
+### GM::ExposeController
+
+This is a very simple 'slied-to-expose' controller (it's not a subclass of
+`UIViewController`, I'm using the term controller loosely here), like facebook's
+and google's slide-menu.  It's very low tech, but effective!  You need to supply
+it with a `target` - the view that will control the slide, and a `slide_view` -
+the view that is moved to expose whatever is beneath it.
+
+If you want to squeeze some performance out of it, you can assign a delegate and
+respond to `will_open_slide_menu` and `did_close_slide_menu`, and you can add/remove
+the background view at that time, which should save some CPU cycles.
+
 ### GM::SelectOneTableViewController
 
 This one is really handy for table-based forms.  Assign `items` and style them
