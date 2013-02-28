@@ -47,10 +47,14 @@ module GM
   class Drawing < UIView
     attr_accessor :draw
 
-    def self.new(frame, drawing=nil)
-      self.alloc.initWithFrame(frame).tap do |instance|
-        instance.draw = drawing if drawing
+    def self.new(frame=nil, drawing=nil)
+      if frame
+        instance = self.alloc.initWithFrame(frame)
+      else
+        instance = self.alloc.init
       end
+      instance.draw = drawing if drawing
+      return instance
     end
 
     def initWithFrame(frame)
