@@ -2,30 +2,30 @@ module GM
   class InsetTextField < UITextField
     include SetupView
 
-    attr_accessor :edge_insets
+    attr_accessor :edgeInsets
 
     def setup
-      @edge_insets = SugarCube::CoreGraphics::EdgeInsets(10, 10, 10, 10)
+      @edgeInsets = SugarCube::CoreGraphics::EdgeInsets(10, 10, 10, 10)
     end
 
-    def edge_insets=(val)
-      @edge_insets = SugarCube::CoreGraphics::EdgeInsets(val)
+    def edgeInsets=(val)
+      @edgeInsets = SugarCube::CoreGraphics::EdgeInsets(val)
     end
 
     # placeholder position
     def placeholderRectForBounds(bounds)
-      UIEdgeInsetsInsetRect(bounds, @edge_insets)
+      UIEdgeInsetsInsetRect(bounds, @edgeInsets)
     end
 
     # text position
     def textRectForBounds(bounds)
-      UIEdgeInsetsInsetRect(bounds, @edge_insets)
+      UIEdgeInsetsInsetRect(bounds, @edgeInsets)
     end
 
     # editing position
     def editingRectForBounds(bounds)
       # super
-      UIEdgeInsetsInsetRect(bounds, @edge_insets)
+      UIEdgeInsetsInsetRect(bounds, @edgeInsets)
     end
 
   end
