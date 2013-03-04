@@ -208,12 +208,14 @@ module GM
       distance = (position.x - original_x).abs
       duration = distance / (@slide_view.bounds.width - @options[:margin]) * 0.25
 
-      @slide_view.move_to(position, duration: duration, options: UIViewAnimationOptionCurveEaseOut) {
-        # event is done, so send 'did' event to delegate
-        if @state == open_direction
-          delegate_send :did_open_slide_menu
-        else
-          delegate_send :did_close_slide_menu
+      @slide_view.move_to(position, duration: duration, options: UIViewAnimationOptionCurveEaseOut) { |completed|
+        if completed
+          # event is done, so send 'did' event to delegate
+          if @state == open_direction
+            delegate_send :did_open_slide_menu
+          else
+            delegate_send :did_close_slide_menu
+          end
         end
       }
       @state = direction
