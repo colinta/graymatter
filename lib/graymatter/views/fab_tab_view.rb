@@ -1,11 +1,18 @@
 module GM
   class FabTabView < UIView
+    include SetupView
+
     attr_accessor :delegate
     attr_accessor :root_controller
     attr_accessor :enabled
-    attr_accessor :location  # :top or :bottom.  default: bottom
     attr_accessor :selected_index
-    attr_accessor :tabHeight  # if this is set, it overrides min_button_height as the offset for thes selectedView
+
+    # :top or :bottom.  default: bottom
+    attr_accessor :location
+
+    # if this is set, it overrides min_button_height as the offset for the selectedView
+    attr_accessor :tab_height
+
     # attr :selected_view_controller
 
     def self.new(controller=nil)
@@ -20,7 +27,6 @@ module GM
     # covering the view's bounds.
     def initInRootController(controller)
       initWithFrame(controller.view.bounds).tap do
-        self.autoresizingMask =  UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight
         @root_controller = controller
       end
     end
@@ -30,25 +36,24 @@ module GM
       initWithFrame([[0, 0], [app_size.width, 0]])
     end
 
+    def setup
+      self.autoresizingMask =  UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight
+      @location = :bottom
+      @enabled = true
+
+      @selectedView = nil
+      # self << (@tabView = UIView.new)
+      self << (@buttons_view = UIView.new)
+
+      @tab_height = nil
+      @min_button_height = nil
+      @max_button_height = 0
+      @selected_index = nil
+    end
+
     def root_controller=(ctlr)
       @root_controller = ctlr
       assign_default_index
-    end
-
-    def initWithFrame(frame)
-      super.tap do
-        @location = :bottom
-        @enabled = true
-
-        @selectedView = nil
-        # self << (@tabView = UIView.new)
-        self << (@buttons_view = UIView.new)
-
-        @tabHeight = nil
-        @min_button_height = nil
-        @max_button_height = 0
-        @selected_index = nil
-      end
     end
 
     def view_controllers
@@ -92,7 +97,7 @@ module GM
           duration:0,
           options:UIViewAnimationOptionTransitionNone,
           animations:lambda{
-            tab_height = @tabHeight || @min_button_height
+            tab_height = @tab_height || @min_button_height
             selected_controller.view.frame = CGRect.new([0, 0], [self.bounds.width, self.bounds.height - tab_height])
 
             @selectedView.removeFromSuperview if @selectedView
@@ -125,7 +130,7 @@ module GM
 
     def layoutSubviews
       super
-      tab_height = @tabHeight || @min_button_height || 0
+      tab_height = @tab_height || @min_button_height || 0
       if self.location == :top
         if @selectedView
           @selectedView.frame = CGRect.new([0, tab_height], [self.frame.size.width, self.frame.size.height - tab_height])
@@ -177,7 +182,7 @@ module GM
       # button touch handler - select the view controller
       my_index = self.view_controllers.length - 1
       controller.fab_tab_button.on :touch do
-        self.selected_index = my_index
+        self.selected_index = my_index if self.enabled
       end
 
       # the selected view was JUST added, it needs to be added to @selectedView

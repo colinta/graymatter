@@ -7,10 +7,6 @@ module GM
       end
     end
 
-    def init
-      initWithFrame(CGRect.empty)
-    end
-
     def awakeFromNib
       _setup
     end
