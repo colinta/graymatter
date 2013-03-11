@@ -1,6 +1,10 @@
 module GM
   module SetupView
 
+    def init
+      initWithFrame(CGRectZero)
+    end
+
     def initWithFrame(frame)
       super.tap do
         _setup
