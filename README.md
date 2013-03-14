@@ -349,3 +349,32 @@ that was using notifications, so there it is).
 GM::DisableUI.post_notification  # => GM::TheEntireUI.disable
 GM::EnableUI.post_notification  # => GM::TheEntireUI.enable
 ```
+
+### Locals
+
+I won't deny the fact that this is a very *hacky* little addition, but it does
+gets the job done!
+
+Problem: local variables drop out of scope, and are released, because the
+callbacks/blocks that use them are called.
+
+Old School Solution: Use instance variables.  This is not always an option
+New School Solution: Use `Locals`
+
+```ruby
+::Locals = GM::Locals
+
+date = NSDate.new
+Locals + date
+# Locals << date
+# Locals & date
+# Locals.store date
+
+10.seconds.later {
+  p date
+  Locals - date
+  # Locals >> date
+  # Locals ^ date
+  # Locals.forget date
+}
+```
