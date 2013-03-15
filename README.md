@@ -365,16 +365,15 @@ New School Solution: Use `Locals`
 ::Locals = GM::Locals
 
 date = NSDate.new
-Locals + date
-# Locals << date
-# Locals & date
-# Locals.store date
+Locals[:date] = date  # you will need to use a unique global name here
 
 10.seconds.later {
+  # you should re-assign the local variable; even though the *contents* are
+  # being stored, the variable itself can get released.
+  date = Locals[:date]
   p date
-  Locals - date
-  # Locals >> date
-  # Locals ^ date
+  # and then remove it from Locals, or else it might never get removed!
+  Locals - :date
   # Locals.forget date
 }
 ```
