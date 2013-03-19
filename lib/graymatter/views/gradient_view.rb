@@ -30,6 +30,16 @@ module GM
       self.backgroundColor = UIColor.clearColor
     end
 
+    def startColor=(value)
+      @startColor = value.uicolor
+      setNeedsDisplay
+    end
+
+    def finalColor=(value)
+      @finalColor = value.uicolor
+      setNeedsDisplay
+    end
+
     def drawRect(rect)
       case self.type
       when :linear
