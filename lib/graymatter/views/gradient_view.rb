@@ -3,22 +3,22 @@ module GM
     include SetupView
 
     # list of colors, you can control spacing with the `points` array
-    attr_accessor :colors
+    attr_updates :colors
     # alias for colors[0], ignored if you assign a `colors` array.
-    attr_accessor :startColor
+    attr_updates :startColor
     # alias for colors[points.length - 1], ignored if you assign a `colors` array.
-    attr_accessor :finalColor
+    attr_updates :finalColor
     # :linear, :radial
-    attr_accessor :type
+    attr_updates :type
     # array of numbers from 0..1, indicating where the color begins.  the list
     # better be sorted!
-    attr_accessor :points
+    attr_updates :points
 
     # for linear gradient:
-    attr_accessor :angle  # 0..2.pi
+    attr_updates :angle  # 0..2.pi
 
     # for radial gradient:
-    attr_accessor :gradientCenter  # CGPoint
+    attr_updates :gradientCenter  # CGPoint
 
     def setup
       self.startColor = :white
