@@ -1,4 +1,5 @@
 module GM
+
   class GradientView < UIView
     include SetupView
 
@@ -38,6 +39,16 @@ module GM
       self.angle = Math::PI / 2
       self.type = :linear
       self.backgroundColor = UIColor.clearColor
+    end
+
+    def startColor=(value)
+      @startColor = value.uicolor
+      setNeedsDisplay
+    end
+
+    def finalColor=(value)
+      @finalColor = value.uicolor
+      setNeedsDisplay
     end
 
     def drawRect(rect)
@@ -175,4 +186,5 @@ module GM
     end
 
   end
+
 end

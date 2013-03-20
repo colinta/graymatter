@@ -117,6 +117,8 @@ module GM
 
       self.subviews.each do |view|
         unless view == @background_view
+          view.setNeedsLayout
+          view.layoutIfNeeded
           add_next(view)
         end
       end

@@ -1,3 +1,4 @@
 /build/
 /.dat*
 graymatter-*.gem
+/app/draw/playground.rb
