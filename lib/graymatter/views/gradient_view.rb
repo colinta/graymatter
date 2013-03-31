@@ -1,6 +1,10 @@
 module GM
+
   class GradientView < UIView
     include SetupView
+
+    # :linear, :radial
+    attr_updates :type
 
     # list of colors, you can control spacing with the `points` array
     attr_updates :colors
@@ -8,17 +12,24 @@ module GM
     attr_updates :startColor
     # alias for colors[points.length - 1], ignored if you assign a `colors` array.
     attr_updates :finalColor
-    # :linear, :radial
-    attr_updates :type
-    # array of numbers from 0..1, indicating where the color begins.  the list
-    # better be sorted!
+    # array of numbers from 0..1, indicating where the color begins.  The list
+    # better be sorted.
     attr_updates :points
 
     # for linear gradient:
     attr_updates :angle  # 0..2.pi
 
     # for radial gradient:
+    attr_updates :startCenter  # CGPoint
+    attr_updates :startRadius  # Float
+    attr_updates :finalCenter  # CGPoint
+    attr_updates :finalRadius  # Float
+    # or you can set both - gradientCenter sets startCenter and finalCenter,
+    # and gradientRadius sets finalRadius, and sets startRadius to 0.
+    # If no center/radius properties are set, the center of the view is used,
+    # with a radius equal to (the diagonal of the frame / 2)
     attr_updates :gradientCenter  # CGPoint
+    attr_updates :gradientRadius  # Float
 
     def setup
       self.startColor = :white
@@ -81,6 +92,14 @@ module GM
         raise "Number of points (#{points.inspect}) does not match number of colors (#{colors.inspect})"
       end
 
+      # make sure all the points are ascending
+      points.inject { |p1, p2|
+        if p1 > p2
+          raise "Points must be in ascending order (not #{points.inspect})"
+        end
+        p2
+      }
+
       # colors is a list of `UIColor`s, but we will need a list of `CGColorRef`s
       cgcolors = colors.map { |color|
         color = color.uicolor unless color.is_a? UIColor
@@ -98,14 +117,6 @@ module GM
         cgcolors.reverse!
         points = points.map{ |p| 1 - p }.reverse
       end
-
-      # make sure all the points are ascending
-      points.inject { |p1, p2|
-        if p1 > p2
-          raise "Points must be in ascending order (not #{points.inspect})"
-        end
-        p2
-      }
 
       context = UIGraphicsGetCurrentContext()
       color_space = CGColorSpaceCreateDeviceRGB()
@@ -130,6 +141,44 @@ module GM
     end
 
     def drawRadialGradient
+      w = CGRectGetWidth(self.frame)
+      h = CGRectGetHeight(self.frame)
+      if w == 0 or h == 0 or (startRadius == 0 && finalRadius == 0)
+        return
+      end
+
+      colors = self.colors.dup
+      points = self.points.dup
+
+      if colors.length != points.length
+        raise "Number of points (#{points.inspect}) does not match number of colors (#{colors.inspect})"
+      end
+
+      # make sure all the points are ascending
+      points.inject { |p1, p2|
+        if p1 > p2
+          raise "Points must be in ascending order (not #{points.inspect})"
+        end
+        p2
+      }
+
+      # colors is a list of `UIColor`s, but we will need a list of `CGColorRef`s
+      cgcolors = colors.map { |color|
+        color = color.uicolor unless color.is_a? UIColor
+        color.CGColor
+      }
+
+      local_start_center = startCenter || gradientCenter || self.bounds.center
+      local_start_radius = startRadius || 0
+
+      local_final_center = finalCenter || gradientCenter || self.bounds.center
+      local_final_radius = finalRadius || gradientRadius || Math.sqrt(bounds.width ** 2 + bounds.height ** 2) / 2
+
+      context = UIGraphicsGetCurrentContext()
+      color_space = CGColorSpaceCreateDeviceRGB()
+
+      gradient = CGGradientCreateWithColors(color_space, cgcolors, points.to_pointer(:float))
+      CGContextDrawRadialGradient(context, gradient, local_start_center, local_start_radius, local_final_center, local_final_radius, 0)
     end
 
     def to_s(options={})
@@ -137,6 +186,7 @@ module GM
     end
 
   end
+
 end
 
 if defined? Kiln
