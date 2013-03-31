@@ -2,7 +2,7 @@ module GM
   class InsetTextField < UITextField
     include SetupView
 
-    attr_accessor :edgeInsets
+    attr_updates :edgeInsets
 
     def setup
       @edgeInsets = SugarCube::CoreGraphics::EdgeInsets(10, 10, 10, 10)

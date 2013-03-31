@@ -18,7 +18,7 @@ module GM
       color: :black,
       font: :bold.uifont(15),
       borderStyle: :none,
-      edgeInsets: [13, 3, 0, 0],
+      edgeInsets: [11.5, 3, 0, 0],
       autoresizing: :full,
       frame: [[67, 0], [230, 45]]
 
