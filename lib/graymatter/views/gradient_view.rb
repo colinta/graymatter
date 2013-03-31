@@ -138,3 +138,17 @@ module GM
 
   end
 end
+
+if defined? Kiln
+  Kiln::Log.info('Found kiln')
+  class << GM::GradientView
+    def kiln
+      @kiln ||= {
+        'Color' => {
+          startColor: Kiln::ColorEditor,
+          finalColor: Kiln::ColorEditor,
+        },
+      }
+    end
+  end
+end
