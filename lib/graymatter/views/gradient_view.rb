@@ -187,4 +187,17 @@ module GM
 
   end
 
+  if defined?(Motion::Xray)
+    class << GradientView
+      def xray
+        @xray ||= {
+          'Color' => {
+            startColor: Motion::Xray::ColorEditor,
+            finalColor: Motion::Xray::ColorEditor,
+          }
+        }
+      end
+    end
+  end
+
 end
