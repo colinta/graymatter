@@ -187,7 +187,9 @@ module GM
 
   end
 
-  if defined?(Motion::Xray)
+end
+
+  if defined?(Motion) && defined?(Motion::Xray)
     class << GradientView
       def xray
         @xray ||= {
@@ -199,19 +201,3 @@ module GM
       end
     end
   end
-
-end
-
-if defined? Kiln
-  Kiln::Log.info('Found kiln')
-  class << GM::GradientView
-    def kiln
-      @kiln ||= {
-        'Color' => {
-          startColor: Kiln::ColorEditor,
-          finalColor: Kiln::ColorEditor,
-        },
-      }
-    end
-  end
-end
