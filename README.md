@@ -289,7 +289,7 @@ If you want to squeeze some performance out of it, you can assign a delegate and
 respond to `will_open_slide_menu` and `did_close_slide_menu`, and you can add/remove
 the background view at that time, which should save some CPU cycles.
 
-### GM::SelectOneTableViewController
+### GM::SelectOneController
 
 This one is really handy for table-based forms.  Assign `items` and style them
 with a `cell_handler` block, and an optional `include_other` boolean will

@@ -10,7 +10,7 @@ module GM
     # :top or :bottom.  default: bottom
     attr_accessor :location
 
-    # if this is set, it overrides min_button_height as the offset for the selectedView
+    # if this is set, it overrides min_button_height as the offset for the selected_view
     attr_accessor :tab_height
 
     # attr :selected_view_controller
@@ -41,7 +41,7 @@ module GM
       @location = :bottom
       @enabled = true
 
-      @selectedView = nil
+      @selected_view = nil
       # self << (@tabView = UIView.new)
       self << (@buttons_view = UIView.new)
 
@@ -185,7 +185,7 @@ module GM
         self.selected_index = my_index if self.enabled
       end
 
-      # the selected view was JUST added, it needs to be added to @selectedView
+      # the selected view was JUST added, it needs to be added to @selected_view
       if @selected_index && self.view_controllers.length == @selected_index + 1
         self.selected_index = @selected_index
       end

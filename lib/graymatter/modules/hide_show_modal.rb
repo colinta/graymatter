@@ -59,14 +59,14 @@ module GM
       @timer.invalidate if @timer
 
       @hide_show_modal_target.bringSubviewToFront(HideShowModal.modal_view)
-      FuncTools.CFMain {
+      FuncTools.CFMain do
         HideShowModal.modal_view.show
         if animated
           HideShowModal.modal_view.fade_in
         else
           HideShowModal.modal_view.alpha = 1.0
         end
-      }
+      end
       @modal_is_visible = true
     end
 
@@ -74,13 +74,13 @@ module GM
       @timer.invalidate if @timer
       @timer = nil
 
-      FuncTools.CFMain {
+      FuncTools.CFMain do
         if animated
           HideShowModal.modal_view.fade_out
         else
           HideShowModal.modal_view.hide
         end
-      }
+      end
       @modal_is_visible = false
     end
 

@@ -39,16 +39,16 @@ class TriggerableDemoController < UIViewController
   def viewDidLoad
     super
 
-    @triggerable.on :bam {
+    @triggerable.on :bam do
       @bam = true
       @boom = false
-    }
-    @triggerable.on :boom {
+    end
+    @triggerable.on :boom do
       @boom = true
       @bam = false
-    }
-    @triggerable.on :bam, :boom { |event|
+    end
+    @triggerable.on :bam, :boom do |event|
       @event = event
-    }
+    end
   end
 end

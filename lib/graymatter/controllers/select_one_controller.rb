@@ -52,7 +52,7 @@ module GM
 
     def tableView(table_view, cellForRowAtIndexPath:index_path)
       if @include_other and index_path.row == @items.length
-        cell_identifier = "SelectOneTableViewController - Other Cell"
+        cell_identifier = "SelectOneController - Other Cell"
         cell = table_view.dequeueReusableCellWithIdentifier(cell_identifier)
 
         if not cell
@@ -76,7 +76,7 @@ module GM
           input.text = nil
         end
       else
-        cell_identifier = "SelectOneTableViewController - Default Cell"
+        cell_identifier = "SelectOneController - Default Cell"
         cell = table_view.dequeueReusableCellWithIdentifier(cell_identifier)
 
         if not cell
