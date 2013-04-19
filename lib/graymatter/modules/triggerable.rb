@@ -70,8 +70,10 @@ module GM
       triggerable_target_action(event).each do |action|
         if action.arity == 0
           action.call
-        else
+        elsif action.arity == 1
           action.call(event)
+        elsif action.arity == 2
+          action.call(event, self)
         end
       end
     end
