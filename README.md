@@ -114,6 +114,11 @@ bezier path to `path`, and that's it.
 You can assign a different radius for each side.  Radius is attached to a *side*
 (not per corner), so that means that there will be some symmetry.
 
+### GM::FakeTableView
+
+Adding views using `addSubview` will actually add them to what *looks* like a
+grouped table view.
+
 UIViewController modules
 ------
 
