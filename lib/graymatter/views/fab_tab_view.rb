@@ -91,27 +91,16 @@ module GM
         view.selected = (selected_index == index)
       end
 
-      if previous_controller && selected_controller
-        root_controller.transitionFromViewController(previous_controller,
-          toViewController:selected_controller,
-          duration:0,
-          options:UIViewAnimationOptionTransitionNone,
-          animations:lambda{
-            tab_height = @tab_height || @min_button_height
-            selected_controller.view.frame = CGRect.new([0, 0], [self.bounds.width, self.bounds.height - tab_height])
+      @selected_view.removeFromSuperview if @selected_view
 
-            @selectedView.removeFromSuperview if @selectedView
-            self.insertSubview(selected_controller.view, atIndex:0)
-          },
-          completion:lambda{ |finished|
-            delegate.fabTabSelectedIndex(selected_index) if delegate and delegate.respond_to?(:fabTabSelectedIndex)
-            delegate.fabTabSelectedController(selected_controller) if delegate and delegate.respond_to?(:fabTabSelectedController)
-            })
-      else
-        @selectedView.removeFromSuperview if @selectedView
-        self.insertSubview(selected_controller.view, atIndex:0)
-      end
-      @selectedView = selected_controller.view
+      tab_height = @tab_height || @min_button_height
+      selected_controller.view.frame = CGRect.new([0, 0], [self.bounds.width, self.bounds.height - tab_height])
+
+      self.insertSubview(selected_controller.view, atIndex:0)
+      @selected_view = selected_controller.view
+
+      delegate.fabTabSelectedIndex(selected_index) if delegate and delegate.respond_to?(:fabTabSelectedIndex)
+      delegate.fabTabSelectedController(selected_controller) if delegate and delegate.respond_to?(:fabTabSelectedController)
 
       return @selected_index
     end
@@ -132,16 +121,16 @@ module GM
       super
       tab_height = @tab_height || @min_button_height || 0
       if self.location == :top
-        if @selectedView
-          @selectedView.frame = CGRect.new([0, tab_height], [self.frame.size.width, self.frame.size.height - tab_height])
+        if @selected_view
+          @selected_view.frame = CGRect.new([0, tab_height], [self.frame.size.width, self.frame.size.height - tab_height])
         end
-        # @tabView.frame = @selectedView.frame
+        # @tabView.frame = @selected_view.frame
         @buttons_view.frame = CGRect.new([0, 0], [self.frame.size.width, @max_button_height])
       else
-        if @selectedView
-          @selectedView.frame = CGRect.new([0, 0], [self.frame.size.width, self.frame.size.height - tab_height])
+        if @selected_view
+          @selected_view.frame = CGRect.new([0, 0], [self.frame.size.width, self.frame.size.height - tab_height])
         end
-        # @tabView.frame = @selectedView.frame
+        # @tabView.frame = @selected_view.frame
         @buttons_view.frame = CGRect.new([0, self.frame.size.height - @max_button_height], [self.frame.size.width, @max_button_height])
       end
 
