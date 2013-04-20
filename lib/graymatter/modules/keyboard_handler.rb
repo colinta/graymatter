@@ -35,7 +35,7 @@ module GM
     def keyboard_handler_keyboard_did_show(notification)
       scroll_view = @keyboard_handler_scroll_view
       kbd_rect = notification.userInfo[UIKeyboardFrameEndUserInfoKey].CGRectValue
-      kbd_rect = App.window.convertRect(kbd_rect, toView:scroll_view)
+      kbd_rect = GM.window.convertRect(kbd_rect, toView:scroll_view)
 
       kbd_height = kbd_rect.size.height
       return if kbd_height < 0

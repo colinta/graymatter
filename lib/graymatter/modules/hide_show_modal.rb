@@ -19,7 +19,7 @@ module GM
 
     # call this method from your controller's `viewDidLoad` method
     def prepare_hide_show_modal(target=nil)
-      @hide_show_modal_target = target || App.window
+      @hide_show_modal_target = target || GM.window
 
       unless HideShowModal.modal_view
         modal_view = ModalView.new

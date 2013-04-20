@@ -5,12 +5,12 @@ module GM
     def showFiend(show_view)
       return if @fiend_overlay
 
-      if resigner = App.window.first_responder
+      if resigner = GM.window.first_responder
         resigner.resignFirstResponder
       end
 
-      @fiend_hiders = App.window.subviews.dup
-      @fiend_target = App.window.uiimage.uiimageview
+      @fiend_hiders = GM.window.subviews.dup
+      @fiend_target = GM.window.uiimage.uiimageview
       @fiend_gradient = @fiend_target.subview(GradientView,
         frame: @fiend_target.bounds.height(30).down(20),
         startColor: :black.uicolor,
@@ -20,15 +20,15 @@ module GM
         )
       @fiend_gradient.fade_in
 
-      App.window << @fiend_target
+      GM.window << @fiend_target
       @fiend_hiders.each &:hide
 
-      @fiend_overlay = UIScrollView.alloc.initWithFrame(App.frame)
+      @fiend_overlay = UIScrollView.alloc.initWithFrame(GM.app_frame)
       @fiend_overlay.contentSize = [@fiend_overlay.bounds.width, 332]
       @fiend_overlay.alpha = 0
       @fiend_overlay.layer.opacity = 0
       @fiend_overlay.backgroundColor = :black.uicolor(0.25)
-      App.window << @fiend_overlay
+      GM.window << @fiend_overlay
       @fiend_overlay.fade_in
 
       @fiend_closer = UIControl.alloc.initWithFrame(@fiend_overlay.bounds)
