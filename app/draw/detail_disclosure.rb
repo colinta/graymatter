@@ -20,12 +20,14 @@ def draw_detail_disclosure(target)
   # create the mask, with its contents
   draws << GM::D::mask(UIBezierPath.bezierPathWithOvalInRect(oval), [blue_bg])
   # draw the ">" shadow in dark blue
-  draws << GM::D::path(bounds.center + CGPoint.new(-1.5, -5.75)).color([2, 71, 182].uicolor(0.6)).delta(5, 5).delta(-5, 5).line_width(3)
+  # draws << GM::D::path(bounds.center + CGPoint.new(-1.5, -5.75)).stroke([2, 71, 182].uicolor(0.6)).delta(5, 5).delta(-5, 5).line_width(3)
   # and the white one on top
-  draws << GM::D::path(bounds.center + CGPoint.new(-1.5, -5)).color(:white).delta(5, 5).delta(-5, 5).line_width(3)
+  # draws << GM::D::path(bounds.center + CGPoint.new(-1.5, -5)).stroke(:white).delta(5, 5).delta(-5, 5).line_width(3)
 
-  target << GM::Drawing.new(bounds, draws).tap { |v|
+  drawing = GM::Drawing.new(bounds, draws).tap { |v|
     v.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight
     v.contentMode = UIViewContentModeRedraw
   }
+  $data = drawing.uiimage.nsdata
+  target << drawing
 end
