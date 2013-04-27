@@ -44,13 +44,13 @@ module GM
       @fiend_overlay << @fiend_modal
       @fiend_modal.slide :up, 406
 
-      $scale ||= 0.6
-      $up ||= -140
-      $perspective ||= -0.0005
+      scale = 0.6
+      up = -140
+      perspective = -0.0005
       UIView.animation_chain(duration:200.millisecs, options:UIViewAnimationOptionCurveLinear) {
-        @fiend_target.layer.transform = CATransform3DTranslate(CATransform3DScale(CATransform3DPerspective(@fiend_target.layer.transform, 0, $perspective), $scale, $scale, $scale), 0, $up, 0)
+        @fiend_target.layer.transform = CATransform3DTranslate(CATransform3DScale(CATransform3DPerspective(@fiend_target.layer.transform, 0, perspective), scale, scale, scale), 0, up, 0)
       }.and_then(duration:300.millisecs, options:UIViewAnimationOptionCurveLinear) {
-        @fiend_target.layer.transform = CATransform3DTranslate(CATransform3DScale(CATransform3DIdentity, $scale, $scale, $scale), 0, $up, 0)
+        @fiend_target.layer.transform = CATransform3DTranslate(CATransform3DScale(CATransform3DIdentity, scale, scale, scale), 0, up, 0)
       }.start
     end
 
