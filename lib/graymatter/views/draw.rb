@@ -103,11 +103,11 @@ module GM
     class Draw
       def self.attr_assigner(name, default=nil, &converter)
         # writer calls the setter
-        define_method("#{name}=") { |value|
+        define_method("#{name}=") do |value|
           self.send(name, value)
-        }
+        end
         # combined getter/setter
-        define_method(name) { |*args|
+        define_method(name) do |*args|
           if args.length == 1
             value = args[0]
             if converter
@@ -120,7 +120,7 @@ module GM
           else
             return instance_variable_get("@#{name}") || default
           end
-        }
+        end
       end
 
       def draw

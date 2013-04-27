@@ -357,6 +357,9 @@ GM::EnableUI.post_notification  # => GM::TheEntireUI.enable
 
 ### Locals
 
+*Unless you are brave of heart, I would not recommend you use this. It is a
+hack, and I have had mixed success with it.*
+
 I won't deny the fact that this is a very *hacky* little addition, but it does
 gets the job done!
 
