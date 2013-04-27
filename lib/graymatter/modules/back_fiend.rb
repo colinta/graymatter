@@ -58,12 +58,11 @@ module GM
       return unless @fiend_overlay
 
       @fiend_modal.slide :down, 406
-      @fiend_overlay.fade_out_and_remove {
+      @fiend_overlay.fade_out_and_remove do
         @forgot_password_ctlr.view.removeFromSuperview
-        # @forgot_password_ctlr.removeFromParentViewController
         @forgot_password_ctlr = nil
         @fiend_overlay = nil
-      }
+      end
       @fiend_gradient.fade_out
 
       UIView.animation_chain {
