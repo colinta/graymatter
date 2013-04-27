@@ -8,11 +8,14 @@ def draw_detail_disclosure(target)
 
   # the blue background consists of two radial gradients - the first is solid, the
   # second fades out a little
+  color = '#d00032'.uicolor
+  color_mid = color << '#fff'.uicolor(0.1)
+  color_last = color << '#fff'.uicolor(0.2)
   blue_bg = GM::D::radial_gradient(bounds.center + CGPoint.new(0, 25), 48, {
-    0.0  => [27,107,219],
-    0.53 => [27,107,219],
-    0.55 => [68,132,226],
-    1.0  => [120,166,233],
+    0.0  => color,
+    0.53 => color,
+    0.55 => color_mid,
+    1.0  => color_last,
   })
 
   # we'll mask inside this oval
