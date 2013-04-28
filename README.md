@@ -355,6 +355,47 @@ GM::DisableUI.post_notification  # => GM::TheEntireUI.disable
 GM::EnableUI.post_notification  # => GM::TheEntireUI.enable
 ```
 
+### D, Drawing, Drawler
+
+`D` is graymatter's drawing library.  They are drawing primitives, built with
+CoreGraphics.  `Drawing` is a `UIView` subclass that accepts an array of `GM::D`
+objects and draws them.  `Drawler` is a `UIView` subclass that you can create as
+a one-off.
+
+###### D
+
+```ruby
+def drawRect(rect)
+  GM::D::circle(rect.frame.center, 10, :white).draw
+  GM::D::circle(rect.frame.center, 8, :red).draw
+end
+```
+
+###### Drawing
+
+```ruby
+circles = Drawing.new
+circles << GM::D::circle(rect.frame.center, 10, :white)
+circles << GM::D::circle(rect.frame.center, 8, :red)
+self.view << circles
+
+# you can use teacup to create these
+style :dot,
+  draw: [
+    GM::D::circle([20, 20], 10, :white),
+    GM::D::circle([20, 20], 8, :red),
+  ]
+```
+
+###### Drawler
+
+```ruby
+self.view << Drawler do |context|
+  CGContextAddEllipseInRect(context, frame)
+  CGContextDrawPath(context, KCGPathFillStroke)
+end
+```
+
 ### Locals
 
 *Unless you are brave of heart, I would not recommend you use this. It is a

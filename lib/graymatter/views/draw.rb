@@ -47,29 +47,50 @@ module GM
   class Drawing < UIView
     attr_accessor :draw
 
-    def self.new(frame=nil, drawing=nil)
+    def self.new(frame=nil, drawings=nil)
       if frame
         instance = self.alloc.initWithFrame(frame)
       else
         instance = self.alloc.init
       end
-      instance.draw = drawing if drawing
+
+      if drawings
+        instance.draw = drawings
+        unless frame
+          self.frame = [[0, 0], intrinsicContentSize]
+        end
+      end
+
       return instance
     end
 
     def initWithFrame(frame)
       super.tap do
         self.backgroundColor = :clear.uicolor
+        self.opaque = false
       end
     end
 
-    def draw=(drawing_primitives)
-      if drawing_primitives.is_a? Enumerable
-        @draw = drawing_primitives
+    def draw=(drawings)
+      if drawings.is_a? Enumerable
+        @draw << drawings
       else
-        @draw = [drawing_primitives]
+        @draw.concat(drawings)
       end
-      drawing_primitives
+      setNeedsDisplay
+    end
+
+    def draw
+      @draw ||= []
+    end
+
+    def <<(view_or_drawing)
+      if view_or_drawing.is_a?(UIView)
+        super
+      else
+        draw << view_or_drawing
+        setNeedsDisplay
+      end
     end
 
     def drawRect(rect)
