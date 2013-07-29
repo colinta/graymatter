@@ -73,9 +73,9 @@ module GM
 
     def draw=(drawings)
       if drawings.is_a? Enumerable
-        @draw << drawings
+        draw.concat(drawings)
       else
-        @draw.concat(drawings)
+        draw << drawings
       end
       setNeedsDisplay
     end
@@ -231,12 +231,16 @@ module GM
       attr_assigner(:corner)
 
       def initialize(*rect_args)
-        @rect = SugarCube::CoreGraphics::Rect(*rect_args)
+        if CGRect === rect_args[0]
+          @rect = rect_args[0]
+        else
+          @rect = SugarCube::CoreGraphics::Rect(*rect_args)
+        end
       end
 
       def draw
         context = UIGraphicsGetCurrentContext()
-        defaults(context) {
+        defaults(context) do
           if corner
             path = UIBezierPath.bezierPathWithRoundedRect(CGRectStandardize(rect), cornerRadius:corner)
             CGContextAddPath(context, path.CGPath)
@@ -244,7 +248,7 @@ module GM
             CGContextAddRect(context, rect)
           end
           CGContextDrawPath(context, KCGPathFillStroke)
-        }
+        end
       end
 
     end
@@ -262,10 +266,10 @@ module GM
 
       def draw
         context = UIGraphicsGetCurrentContext()
-        defaults(context) {
+        defaults(context) do
           CGContextAddEllipseInRect(context, frame)
           CGContextDrawPath(context, KCGPathFillStroke)
-        }
+        end
       end
 
       def frame
@@ -331,10 +335,10 @@ module GM
         @path.lineWidth = self.line_width
 
         context = UIGraphicsGetCurrentContext()
-        defaults(context) {
+        defaults(context) do
           CGContextAddPath(context, @path.CGPath)
           CGContextDrawPath(context, KCGPathFillStroke)
-        }
+        end
       end
 
     end
@@ -426,13 +430,13 @@ module GM
         CGContextSaveGState(context)
 
         if @yield
-          defaults(context) {
+          defaults(context) do
             if @yield.arity == 1
               @yield.call(context)
             else
               @yield.call
             end
-          }
+          end
         end
 
         CGContextRestoreGState(context)

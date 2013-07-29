@@ -19,7 +19,7 @@ module GM
       font: :bold.uifont(15),
       borderStyle: :none,
       edgeInsets: [11.5, 3, 0, 0],
-      autoresizing: :full,
+      autoresizing: :fill,
       frame: [[67, 0], [230, 45]]
 
     style :long_cell_label, extends: :cell_label,

@@ -1,8 +1,11 @@
 module GM
   # "swoops" a view back, and loads another view as a modal
   module BackFiend
+    attr_accessor :fiend_scale
+    attr_accessor :fiend_up
+    attr_accessor :fiend_perspective
 
-    def showFiend(show_view)
+    def show_fiend(show_view=nil)
       return if @fiend_overlay
 
       if resigner = GM.window.first_responder
@@ -31,36 +34,43 @@ module GM
       GM.window << @fiend_overlay
       @fiend_overlay.fade_in
 
-      @fiend_closer = UIControl.alloc.initWithFrame(@fiend_overlay.bounds)
-      @fiend_closer.on :touch {
-        hideForgotPassword
-      }
-      @fiend_overlay << @fiend_closer
+      if show_view
 
-      @fiend_modal = show_view
-      @fiend_modal.frame = @fiend_modal.frame.down(@fiend_overlay.frame.height)
-      @fiend_modal.layer.shadowOpacity = 1
-      @fiend_modal.layer.shadowRadius = 10
-      @fiend_overlay << @fiend_modal
-      @fiend_modal.slide :up, 406
+        @fiend_closer = UIControl.alloc.initWithFrame(@fiend_overlay.bounds)
+        @fiend_closer.on :touch do
+          hide_fiend
+        end
+        @fiend_overlay << @fiend_closer
 
-      scale = 0.6
-      up = -140
-      perspective = -0.0005
+        @fiend_modal = show_view
+        @fiend_modal.frame = @fiend_modal.frame.down(@fiend_overlay.frame.height)
+        @fiend_modal.layer.shadowOpacity = 1
+        @fiend_modal.layer.shadowRadius = 10
+        @fiend_overlay << @fiend_modal
+        @fiend_modal.slide :up, @fiend_modal.frame.height
+      else
+        @fiend_modal = nil
+      end
+
+      @fiend_scale ||= 0.6
+      @fiend_up ||= -140
+      @fiend_perspective ||= -0.0005
+
       UIView.animation_chain(duration:200.millisecs, options:UIViewAnimationOptionCurveLinear) {
-        @fiend_target.layer.transform = CATransform3DTranslate(CATransform3DScale(CATransform3DPerspective(@fiend_target.layer.transform, 0, perspective), scale, scale, scale), 0, up, 0)
+        @fiend_target.layer.transform = CATransform3DTranslate(CATransform3DScale(CATransform3DPerspective(@fiend_target.layer.transform, 0, @fiend_perspective), @fiend_scale, @fiend_scale, @fiend_scale), 0, @fiend_up, 0)
       }.and_then(duration:300.millisecs, options:UIViewAnimationOptionCurveLinear) {
-        @fiend_target.layer.transform = CATransform3DTranslate(CATransform3DScale(CATransform3DIdentity, scale, scale, scale), 0, up, 0)
+        @fiend_target.layer.transform = CATransform3DTranslate(CATransform3DScale(CATransform3DIdentity, @fiend_scale, @fiend_scale, @fiend_scale), 0, @fiend_up, 0)
       }.start
     end
 
-    def hideFiend
+    def hide_fiend
       return unless @fiend_overlay
 
-      @fiend_modal.slide :down, 406
+      if @fiend_modal
+        @fiend_modal.slide :down, 406
+      end
       @fiend_overlay.fade_out_and_remove do
         @forgot_password_ctlr.view.removeFromSuperview
-        @forgot_password_ctlr = nil
         @fiend_overlay = nil
       end
       @fiend_gradient.fade_out

@@ -7,6 +7,10 @@ module GM
     attr_accessor :enabled
     attr_accessor :selected_index
 
+    # In case you want to add accessory views to the button view
+    attr :buttons_view
+    attr :accessories_view
+
     # :top or :bottom.  default: bottom
     attr_accessor :location
 
@@ -44,6 +48,8 @@ module GM
       @selected_view = nil
       # self << (@tabView = UIView.new)
       self << (@buttons_view = UIView.new)
+      self << (@accessories_view = UIView.new)
+      @accessories_view.userInteractionEnabled = false
 
       @tab_height = nil
       @min_button_height = nil
@@ -133,6 +139,7 @@ module GM
         # @tabView.frame = @selected_view.frame
         @buttons_view.frame = CGRect.new([0, self.frame.size.height - @max_button_height], [self.frame.size.width, @max_button_height])
       end
+      @accessories_view.frame = @buttons_view.frame
 
       x = 0
       @buttons_view.subviews.each do |button|

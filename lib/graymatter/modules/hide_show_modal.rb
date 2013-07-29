@@ -24,9 +24,10 @@ module GM
       unless HideShowModal.modal_view
         modal_view = ModalView.new
         modal_view.backgroundColor = :black.uicolor(0.5)
-        modal_view.autoresizingMask = :full.uiautoresizingmask
+        modal_view.autoresizingMask = :fill.uiautoresizingmask
         modal_view.spinner = UIActivityIndicatorView.large
         modal_view.spinner.center = [modal_view.bounds.width / 2, modal_view.bounds.height / 2]
+        modal_view.spinner.autoresizingMask = :fixed_middle.uiautoresizingmask
         modal_view.spinner.startAnimating
         modal_view << modal_view.spinner
         HideShowModal.modal_view = modal_view
