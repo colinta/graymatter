@@ -10,6 +10,7 @@ module GM
 
     def edgeInsets=(val)
       @edgeInsets = SugarCube::CoreGraphics::EdgeInsets(val)
+      setNeedsDisplay
     end
 
     # placeholder position
