@@ -3,6 +3,10 @@ unless defined?(Motion::Project::Config)
 end
 
 
+require 'sugarcube-gestures'
+require 'sugarcube-uikit'
+
+
 Motion::Project::App.setup do |app|
   # scans app.files until it finds app/ (the default)
   # if found, it inserts just before those files, otherwise it will insert to
