@@ -3,9 +3,7 @@ unless defined?(Motion::Project::Config)
 end
 
 
-require 'sugarcube-gestures'
-require 'sugarcube-uikit'
-
+require 'sugarcube-common'
 
 Motion::Project::App.setup do |app|
   # scans app.files until it finds app/ (the default)

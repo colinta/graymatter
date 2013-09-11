@@ -1,9 +1,8 @@
 $:.unshift('/Library/RubyMotion/lib')
-require 'motion/project'
+require 'motion/project/template/ios'
 require 'bundler'
 Bundler.require
-require 'sugarcube-gestures'
-require 'sugarcube-uikit'
+require 'sugarcube-common'
 
 
 Motion::Project::App.setup do |app|
