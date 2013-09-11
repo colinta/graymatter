@@ -118,9 +118,6 @@ module GM
         points = points.map{ |p| 1 - p }.reverse
       end
 
-      context = UIGraphicsGetCurrentContext()
-      color_space = CGColorSpaceCreateDeviceRGB()
-
       center = CGPoint.new(w/2, h/2)
       radius = Math.hypot(center.x, center.y)
       r_angle = Math.atan2(center.y, center.x)
@@ -136,7 +133,9 @@ module GM
       final_point = center + CGPoint.new(l * Math.cos(angle),
                                          l * Math.sin(angle))
 
+      color_space = CGColorSpaceCreateDeviceRGB()
       gradient = CGGradientCreateWithColors(color_space, cgcolors, points.to_pointer(:float))
+      context = UIGraphicsGetCurrentContext()
       CGContextDrawLinearGradient(context, gradient, start_point, final_point, 0)
     end
 
@@ -174,10 +173,10 @@ module GM
       local_final_center = finalCenter || gradientCenter || self.bounds.center
       local_final_radius = finalRadius || gradientRadius || Math.sqrt(bounds.width ** 2 + bounds.height ** 2) / 2
 
-      context = UIGraphicsGetCurrentContext()
       color_space = CGColorSpaceCreateDeviceRGB()
-
       gradient = CGGradientCreateWithColors(color_space, cgcolors, points.to_pointer(:float))
+
+      context = UIGraphicsGetCurrentContext()
       CGContextDrawRadialGradient(context, gradient, local_start_center, local_start_radius, local_final_center, local_final_radius, 0)
     end
 
