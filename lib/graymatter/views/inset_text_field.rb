@@ -15,18 +15,18 @@ module GM
 
     # placeholder position
     def placeholderRectForBounds(bounds)
-      UIEdgeInsetsInsetRect(bounds, @edgeInsets)
+      UIEdgeInsetsInsetRect(bounds, self.edgeInsets)
     end
 
     # text position
     def textRectForBounds(bounds)
-      UIEdgeInsetsInsetRect(bounds, @edgeInsets)
+      UIEdgeInsetsInsetRect(bounds, self.edgeInsets)
     end
 
     # editing position
     def editingRectForBounds(bounds)
       # super
-      UIEdgeInsetsInsetRect(bounds, @edgeInsets)
+      UIEdgeInsetsInsetRect(bounds, self.edgeInsets)
     end
 
   end
