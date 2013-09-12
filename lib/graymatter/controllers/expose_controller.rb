@@ -64,11 +64,11 @@ module GM
       @slide_view = slide_view
 
       @cover_view = UIControl.alloc.initWithFrame(CGRect.empty)
-      @cover_view.on :touch_down {
+      @cover_view.on :touch_down do
         toggle
-      }
+      end
 
-      target.on_gesture(HorizontalPanGestureRecognizer) { |event|
+      target.on_gesture(HorizontalPanGestureRecognizer) do |event|
         case event.state
         when :began.uigesturerecognizerstate
           start_gesture(event)
@@ -77,7 +77,7 @@ module GM
         when :ended.uigesturerecognizerstate
           move_to_state(@last_direction)
         end
-      }
+      end
 
       # reset state
       if open_direction == :right

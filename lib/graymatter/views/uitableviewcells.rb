@@ -1,5 +1,5 @@
 module GM
-  CellStylesheet = Teacup::Stylesheet.new {
+  CellStylesheet = Teacup::Stylesheet.new do
     style :cell_label,
       background: :clear,
       color: '#526691',
@@ -27,7 +27,7 @@ module GM
 
     style :cell_switch,
       frame: [[209, 8], [79, 27]]
-  }
+  end
 
   class GMCellClass < UITableViewCell
     class << self
