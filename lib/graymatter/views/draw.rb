@@ -226,9 +226,10 @@ module GM
 
     end
 
-    class Rect < Line
+    class Rect < Primitive
       attr_assigner(:rect) { |rect| SugarCube::CoreGraphics::Rect(rect) }
-      attr_assigner(:corner)
+      attr_assigner(:corner)  # corner radius/radii can be a numeric or CGSize
+      attr_assigner(:corners)  # UIRectCorner indicating which corners
 
       def initialize(*rect_args)
         if CGRect === rect_args[0]
@@ -241,11 +242,22 @@ module GM
       def draw
         context = UIGraphicsGetCurrentContext()
         defaults(context) do
-          if corner
-            path = UIBezierPath.bezierPathWithRoundedRect(CGRectStandardize(rect), cornerRadius:corner)
+          if self.corner && self.corners
+            if self.corner.is_a?(Numeric)
+              self.corner = CGSize.new(self.corner, self.corner)
+            end
+            path = UIBezierPath.bezierPathWithRoundedRect(CGRectStandardize(self.rect), byRoundingCorners:self.corners, cornerRadii:self.corner)
             CGContextAddPath(context, path.CGPath)
+          elsif self.corner
+            if self.corner.is_a?(Numeric)
+              path = UIBezierPath.bezierPathWithRoundedRect(CGRectStandardize(self.rect), cornerRadius:self.corner)
+              CGContextAddPath(context, path.CGPath)
+            else
+              path = UIBezierPath.bezierPathWithRoundedRect(CGRectStandardize(self.rect), byRoundingCorners:UIRectCornerAllCorners, cornerRadii:self.corner)
+              CGContextAddPath(context, path.CGPath)
+            end
           else
-            CGContextAddRect(context, rect)
+            CGContextAddRect(context, self.rect)
           end
           CGContextDrawPath(context, KCGPathFillStroke)
         end
