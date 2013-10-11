@@ -6,10 +6,8 @@ module GM
     #   insets will be used for the `contentInset` property.
     #   Default: [0, 0, 0, 0]
     def prepare_keyboard_handler(scroll_view, insets=nil)
-      insets ||= [0, 0, 0, 0]
-
       @keyboard_handler_scroll_view = scroll_view
-      @keyboard_handler_insets = insets
+      @keyboard_handler_insets = insets || scroll_view.contentInset
     end
 
     def keyboard_handler_start
@@ -40,7 +38,9 @@ module GM
       kbd_height = kbd_rect.size.height
       return if kbd_height < 0
 
-      insets = [0, 0, kbd_height, 0]
+      @keyboard_handler_insets = scroll_view.contentInset
+      insets = scroll_view.contentInset
+      insets.bottom = kbd_height
       scroll_view.contentInset = insets
       scroll_view.scrollIndicatorInsets = insets
 
@@ -53,11 +53,11 @@ module GM
     end
 
     def keyboard_handler_keyboard_will_hide
-      insets = @keyboard_handler_insets
       scroll_view = @keyboard_handler_scroll_view
-      scroll_view.contentInset = insets
-      scroll_view.scrollIndicatorInsets = insets
+      scroll_view.contentInset = @keyboard_handler_insets
+      scroll_view.scrollIndicatorInsets = @keyboard_handler_insets
     end
 
   end
+
 end
