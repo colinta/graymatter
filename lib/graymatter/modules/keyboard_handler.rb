@@ -45,7 +45,7 @@ module GM
       scroll_view.scrollIndicatorInsets = insets
 
       first_responder = self.view.first_responder
-      if first_responder && first_responder.is_a?(UITextField)
+      if first_responder && (first_responder.is_a?(UITextField) || first_responder.is_a?(UITextView))
         scroll_origin = scroll_view.convertPoint([0, 0], fromView:first_responder)
         scroll_rect = [scroll_origin, first_responder.size]
         scroll_view.scrollRectToVisible(scroll_rect, animated:true)
