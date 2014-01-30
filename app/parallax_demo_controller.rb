@@ -61,7 +61,7 @@ class ParallaxDemoController < UIViewController
       backgroundColor: :white.uicolor,
       ) do
       100.times do |i|
-        subview(UILabel, :"label_#{i}", frame: [[0, 15 * i], [20, 15]], text: (i % 100).to_s)
+        subview(UILabel, "label_#{i}", frame: [[0, 15 * i], [20, 15]], text: (i % 100).to_s)
       end
     end
   end
