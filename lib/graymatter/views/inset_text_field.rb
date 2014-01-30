@@ -4,8 +4,8 @@ module GM
 
     attr_updates :edgeInsets
 
-    def setup
-      @edgeInsets = SugarCube::CoreGraphics::EdgeInsets(10, 10, 10, 10)
+    def edgeInsets
+      @edgeInsets ||= UIEdgeInsets.new(0, 0, 0, 0)
     end
 
     def edgeInsets=(val)
