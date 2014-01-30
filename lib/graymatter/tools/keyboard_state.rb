@@ -1,11 +1,11 @@
 module GM
   class KeyboardState
     NSNotificationCenter.defaultCenter.addObserver(self,
-            selector: :'didShow:',
-            name: UIKeyboardDidShowNotification,
+            selector: 'willShow:',
+            name: UIKeyboardWillShowNotification,
             object: nil)
     NSNotificationCenter.defaultCenter.addObserver(self,
-            selector: :'willHide:',
+            selector: 'willHide:',
             name: UIKeyboardWillHideNotification,
             object: nil)
     @visible = false
@@ -18,7 +18,16 @@ module GM
         @visible
       end
 
-      def didShow(notification)
+      def height
+        if @visible
+          kbd_rect = @last_notification.userInfo[UIKeyboardFrameEndUserInfoKey].CGRectValue
+          return kbd_rect.height
+        else
+          return 0
+        end
+      end
+
+      def willShow(notification)
         @last_notification = notification
         @visible = true
       end

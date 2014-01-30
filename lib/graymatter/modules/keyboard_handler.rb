@@ -12,7 +12,7 @@ module GM
 
     def keyboard_handler_start
       NSNotificationCenter.defaultCenter.addObserver(self,
-              selector: :'keyboard_handler_keyboard_did_show:',
+              selector: 'keyboard_handler_keyboard_did_show:',
               name: UIKeyboardDidShowNotification,
               object: nil)
       NSNotificationCenter.defaultCenter.addObserver(self,
