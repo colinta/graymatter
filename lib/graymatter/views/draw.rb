@@ -132,7 +132,7 @@ module GM
           if args.length == 1
             value = args[0]
             if converter
-              value = converter.call(value)
+              value = instance_exec(value, &converter)
             end
             instance_variable_set("@#{name}", value)
             return self
