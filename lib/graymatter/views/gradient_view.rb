@@ -136,7 +136,7 @@ module GM
       color_space = CGColorSpaceCreateDeviceRGB()
       gradient = CGGradientCreateWithColors(color_space, cgcolors, points.to_pointer(:float))
       context = UIGraphicsGetCurrentContext()
-      CGContextDrawLinearGradient(context, gradient, start_point, final_point, 0)
+      CGContextDrawLinearGradient(context, gradient, start_point, final_point, KCGGradientDrawsAfterEndLocation)
     end
 
     def drawRadialGradient
@@ -177,7 +177,7 @@ module GM
       gradient = CGGradientCreateWithColors(color_space, cgcolors, points.to_pointer(:float))
 
       context = UIGraphicsGetCurrentContext()
-      CGContextDrawRadialGradient(context, gradient, local_start_center, local_start_radius, local_final_center, local_final_radius, 0)
+      CGContextDrawRadialGradient(context, gradient, local_start_center, local_start_radius, local_final_center, local_final_radius, KCGGradientDrawsAfterEndLocation)
     end
 
     def to_s(options={})
