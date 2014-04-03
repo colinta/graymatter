@@ -277,6 +277,10 @@ module GM
         self.fill(fill_color) if fill_color
       end
 
+      def path
+        UIBezierPath.bezierPathWithOvalInRect(frame)
+      end
+
       def draw
         context = UIGraphicsGetCurrentContext()
         defaults(context) do
@@ -291,6 +295,21 @@ module GM
 
       def center_x ; @center[0] ; end
       def center_y ; @center[1] ; end
+
+    end
+
+    class Oval < Circle
+      attr_assigner(:size) { |size| SugarCube::CoreGraphics::Size(size) }
+
+      def radius=(value)
+        self.size = [value * 2, value * 2]
+      end
+
+      def frame
+        radius_x = self.size.width
+        radius_y = self.size.height
+        CGRectStandardize(CGRectMake(center_x - radius_x, center_y - radius_y,  radius_x * 2, radius_y * 2))
+      end
 
     end
 
