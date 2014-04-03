@@ -77,9 +77,6 @@ Why use a custom tab controller?  Because the built-in one does not support
 custom buttons, that's the only reason.  This one is much less feature-rich, but
 gets the job done!
 
-TODO: support pressing the tab button to return to a navigation controller's
-root view.
-
 ### GM::GradientView
 
 This used to be a separate gem, but I've removed that.  It lives here now.
@@ -118,6 +115,17 @@ You can assign a different radius for each side.  Radius is attached to a *side*
 
 Adding views using `addSubview` will actually add them to what *looks* like a
 grouped table view.
+
+### GM::SensibleFlowLayout
+
+This `UICollectionViewFlowLayout` subclass makes it easier to add animations to
+added/removed items from a `UICollectionView`.  Just subclass
+`GM::SensibleFlowLayout` and define these two methods, where you add your
+attributes:
+
+- `def appearing_attributes(attrs, for_path: index_path)`
+- `def disappearing_attributes(attrs, for_path: index_path)`
+
 
 UIViewController modules
 ------
@@ -260,12 +268,12 @@ class BamBoomView < UIView
 end
 
 cell = BamBoomView.new
-cell.on :bam {
+cell.on :bam do
   puts "BAM!"
-}
-cell.on :boom {
+end
+cell.on :boom do
   puts "BOOM!"
-}
+end
 ```
 
 Tools
