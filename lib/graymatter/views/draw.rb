@@ -239,26 +239,27 @@ module GM
         end
       end
 
+      def path
+        if self.corner && self.corners
+          if self.corner.is_a?(Numeric)
+            self.corner = CGSize.new(self.corner, self.corner)
+          end
+          return UIBezierPath.bezierPathWithRoundedRect(CGRectStandardize(self.rect), byRoundingCorners:self.corners, cornerRadii:self.corner)
+        elsif self.corner
+          if self.corner.is_a?(Numeric)
+            return UIBezierPath.bezierPathWithRoundedRect(CGRectStandardize(self.rect), cornerRadius:self.corner)
+          else
+            return UIBezierPath.bezierPathWithRoundedRect(CGRectStandardize(self.rect), byRoundingCorners:UIRectCornerAllCorners, cornerRadii:self.corner)
+          end
+        else
+          return UIBezierPath.bezierPathWithRect(self.rect)
+        end
+      end
+
       def draw
         context = UIGraphicsGetCurrentContext()
         defaults(context) do
-          if self.corner && self.corners
-            if self.corner.is_a?(Numeric)
-              self.corner = CGSize.new(self.corner, self.corner)
-            end
-            path = UIBezierPath.bezierPathWithRoundedRect(CGRectStandardize(self.rect), byRoundingCorners:self.corners, cornerRadii:self.corner)
-            CGContextAddPath(context, path.CGPath)
-          elsif self.corner
-            if self.corner.is_a?(Numeric)
-              path = UIBezierPath.bezierPathWithRoundedRect(CGRectStandardize(self.rect), cornerRadius:self.corner)
-              CGContextAddPath(context, path.CGPath)
-            else
-              path = UIBezierPath.bezierPathWithRoundedRect(CGRectStandardize(self.rect), byRoundingCorners:UIRectCornerAllCorners, cornerRadii:self.corner)
-              CGContextAddPath(context, path.CGPath)
-            end
-          else
-            CGContextAddRect(context, self.rect)
-          end
+          CGContextAddPath(context, self.path.CGPath)
           CGContextDrawPath(context, KCGPathFillStroke)
         end
       end
