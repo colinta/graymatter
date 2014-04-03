@@ -4,8 +4,8 @@ module GM
   class FakeTableView < UIView
     attr_accessor :views
 
-    attr_updates :borderRadius
-    attr_updates :borderColor
+    attr :borderRadius
+    attr :borderColor
 
     def initWithFrame(frame)
       super.tap do
@@ -13,7 +13,46 @@ module GM
         @borderColor = UIColor.lightGrayColor
         self.backgroundColor = UIColor.clearColor
         self.opaque = false
+
+        @border_layer = CALayer.layer
+        @border_layer.borderWidth = 1.pixel
+        self.layer << @border_layer
+        self.update_border_layer
       end
+    end
+
+    def update_border_layer
+      if @border_layer
+        layoutIfNeeded
+        @border_layer.frame = self.layer.bounds.inset(self.insets)
+        @border_layer.borderColor = @borderColor.CGColor
+        @border_layer.cornerRadius = @borderRadius
+      end
+    end
+
+    def setFrame(value)
+      super
+      self.update_border_layer
+    end
+
+    def insets
+      @insets ||= UIEdgeInsetsMake(0, 0, 0, 0)
+    end
+
+    def insets=(insets)
+      @insets = SugarCube::CoreGraphics::EdgeInsets(insets)
+      self.setNeedsLayout
+      self.update_border_layer
+    end
+
+    def borderRadius=(value)
+      @borderRadius = value
+      self.update_border_layer
+    end
+
+    def borderColor=(value)
+      @borderColor = value
+      self.update_border_layer
     end
 
     def views
@@ -42,9 +81,10 @@ module GM
       super
       existing_views = self.subviews
 
-      row_top = self.bounds.y
-      row_width = self.bounds.width
-      row_height = self.bounds.height / views.length
+      table_bounds = self.bounds.inset(self.insets)
+      row_top = table_bounds.y
+      row_width = table_bounds.width
+      row_height = table_bounds.height / self.views.length
       views.each_with_index do |view, index|
         if views.length == 1
           table_row_class = OnlyFakeTableRowView
@@ -56,7 +96,7 @@ module GM
           table_row_class = MiddleFakeTableRowView
         end
 
-        table_row_frame = CGRect.new([self.bounds.x, row_top], [row_width, row_height])
+        table_row_frame = CGRect.new([table_bounds.x, row_top], [row_width, row_height])
         if existing_views[index] and existing_views[index].is_a? table_row_class
           table_row_view = existing_views[index]
           table_row_view.frame = table_row_frame
@@ -107,85 +147,29 @@ module GM
       superview ? superview.borderColor : nil
     end
 
-    def willRemoveSubview(view)
-      if superview
-        superview.removeView(view)
-      end
-      super
-    end
+    # def drawRect(rect)
+    #   context = UIGraphicsGetCurrentContext()
+    #   CGContextSaveGState(context)
 
-    def drawRect(rect)
-      context = UIGraphicsGetCurrentContext()
-      CGContextSaveGState(context)
-
-      CGContextAddPath(context, border_path)
-      CGContextSetFillColorWithColor(context, self.foregroundColor.CGColor)
-      CGContextSetStrokeColorWithColor(context, borderColor.CGColor)
-      CGContextDrawPath(context, KCGPathFillStroke)
-
-      CGContextRestoreGState(context)
-    end
+    #   CGContextRestoreGState(context)
+    # end
 
   end
 
 
   class FirstFakeTableRowView < FakeTableRowView
-
-    def border_path
-      g_path = CGPathCreateMutable()
-      CGPathMoveToPoint(g_path, nil, self.bounds.x, self.bounds.height)
-      CGPathAddArc(g_path, nil, self.bounds.x + borderRadius, borderRadius, borderRadius, Math::PI, 3*Math::PI/2, false)
-      CGPathAddArc(g_path, nil, self.bounds.width - borderRadius, borderRadius, borderRadius, 3*Math::PI/2, 0, false)
-      CGPathAddLineToPoint(g_path, nil, self.bounds.width, self.bounds.height)
-      CGPathAddLineToPoint(g_path, nil, self.bounds.x, self.bounds.height)
-      g_path
-    end
-
   end
 
 
   class MiddleFakeTableRowView < FakeTableRowView
-
-    def border_path
-      g_path = CGPathCreateMutable()
-      CGPathMoveToPoint(g_path, nil, self.bounds.x, self.bounds.y)
-      CGPathAddLineToPoint(g_path, nil, self.bounds.width, self.bounds.y)
-      CGPathAddLineToPoint(g_path, nil, self.bounds.width, self.bounds.height)
-      CGPathAddLineToPoint(g_path, nil, self.bounds.x, self.bounds.height)
-      CGPathAddLineToPoint(g_path, nil, self.bounds.x, self.bounds.y)
-      g_path
-    end
-
   end
 
 
   class LastFakeTableRowView < FakeTableRowView
-
-    def border_path
-      g_path = CGPathCreateMutable()
-      CGPathMoveToPoint(g_path, nil, self.bounds.x, self.bounds.y)
-      CGPathAddArc(g_path, nil, self.bounds.x + borderRadius, self.bounds.height - borderRadius, borderRadius, Math::PI, Math::PI/2, true)
-      CGPathAddArc(g_path, nil, self.bounds.width - borderRadius, self.bounds.height - borderRadius, borderRadius, Math::PI/2, 0, true)
-      CGPathAddLineToPoint(g_path, nil, self.bounds.width, self.bounds.y)
-      CGPathAddLineToPoint(g_path, nil, self.bounds.x, self.bounds.y)
-      g_path
-    end
-
   end
 
 
   class OnlyFakeTableRowView < FakeTableRowView
-
-    def border_path
-      g_path = CGPathCreateMutable()
-      CGPathMoveToPoint(g_path, nil, self.bounds.x, borderRadius)
-      CGPathAddArc(g_path, nil, self.bounds.x + borderRadius, self.bounds.height - borderRadius, borderRadius, Math::PI, Math::PI/2, true)
-      CGPathAddArc(g_path, nil, self.bounds.width - borderRadius, self.bounds.height - borderRadius, borderRadius, Math::PI/2, 0, true)
-      CGPathAddArc(g_path, nil, self.bounds.width - borderRadius, borderRadius, borderRadius, 0, 3*Math::PI/2, true)
-      CGPathAddArc(g_path, nil, self.bounds.x + borderRadius, borderRadius, borderRadius, 3*Math::PI/2, Math::PI, true)
-      g_path
-    end
-
   end
 
 end
