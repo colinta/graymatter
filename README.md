@@ -332,9 +332,9 @@ after.call  # => 'hi!'
 after.call  # => 'hi!'
 
 keep_it_up = GM::FuncTools.until(3) { puts 'boo!' }
-keep_it_up.call  # => 'hi!'
-keep_it_up.call  # => 'hi!'
-keep_it_up.call  # => 'hi!'
+keep_it_up.call  # => 'boo!'
+keep_it_up.call  # => 'boo!'
+keep_it_up.call  # => 'boo!'
 keep_it_up.call
 keep_it_up.call
 
